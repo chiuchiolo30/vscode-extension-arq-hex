@@ -27,6 +27,9 @@ jobs:
       if: runner.os == 'Linux'
     - run: npm test
       if: runner.os != 'Linux'
+    - name: Install vsce
+      if: matrix.os == 'ubuntu-latest'
+      run: npm install -g vsce  
     - name: Publish
       if: matrix.os == 'ubuntu-latest'
       run: npm run deploy
