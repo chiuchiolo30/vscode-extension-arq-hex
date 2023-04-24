@@ -32,7 +32,7 @@ jobs:
       run: npm install -g vsce
     - name: Login to VSCE
       if: matrix.os == 'ubuntu-latest'
-      run: vsce login FlutterCleanArchitecture -p ${{ secrets.YOUR_SECRET_NAME }}
+      run: vsce login FlutterCleanArchitecture --pat ${{ secrets.YOUR_SECRET_NAME }}
     - name: Publish
       if: matrix.os == 'ubuntu-latest'
       run: npm run deploy
