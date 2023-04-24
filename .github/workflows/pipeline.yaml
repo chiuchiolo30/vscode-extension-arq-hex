@@ -29,7 +29,10 @@ jobs:
       if: runner.os != 'Linux'
     - name: Install vsce
       if: matrix.os == 'ubuntu-latest'
-      run: npm install -g vsce  
+      run: npm install -g vsce
+    - name: Login to VSCE
+      if: matrix.os == 'ubuntu-latest'
+      run: vsce login FlutterCleanArchitecture -p ${{ secrets.YOUR_SECRET_NAME }}
     - name: Publish
       if: matrix.os == 'ubuntu-latest'
       run: npm run deploy
