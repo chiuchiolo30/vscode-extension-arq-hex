@@ -1,7 +1,9 @@
 # Flutter Clean Architecture
 <p align="left">
-    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
+    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>    
+    <a href="https://github.com/chiuchiolo30/vscode-extension-arq-hex/actions/workflows/pipeline.yaml"><img src="https://github.com/chiuchiolo30/vscode-extension-arq-hex/actions/workflows/pipeline.yaml/badge.svg" alt="Deployment Pipeline"></a>    
 </p>
+
 Esta extensión genera una estructura de carpetas y archivos para implementar la arquitectura limpia (Clean Architecture) en proyectos de Dart.
 
 ## Características
