@@ -27,6 +27,10 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "icon": {
+      "light": "./images/logo-vs.png",
+      "dark": "./images/logo-vs.png"
+    },
     "commands": [
       {
         "command": "flutter-arq-hex.createFeature",
