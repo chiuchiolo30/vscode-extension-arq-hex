@@ -5,17 +5,22 @@ on:
     branches:
       - master
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
-        with:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install dependencies
-        run: npm install
-      - name: Lint
-        run: npm run lint
-    
+    - name: Install dependencies
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+    - run: npm install --no-audit --no-fund --no-optional
+    - run: xvfb-run -a npm test
+      if: runner.os == 'Linux'
+    - run: npm test
+      if: runner.os != 'Linux'

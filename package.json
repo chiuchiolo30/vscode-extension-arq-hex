@@ -1,7 +1,11 @@
 {
   "name": "flutter-arq-hex",
-  "displayName": "flutter-arq-hex",
-  "description": "",
+  "displayName": "Flutter Clean Architecture",
+  "publisher": "flutter-arq-hex",
+  "description": "Esta extensión genera una estructura de carpetas y archivos para implementar la arquitectura limpia (Clean Architecture) en proyectos de Dart.",
+  "author": {
+    "name": "Chiuchiolo Sergio Edgardo"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.77.0"
@@ -9,6 +13,7 @@
   "categories": [
     "Other"
   ],
+  "license": "MIT",
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
