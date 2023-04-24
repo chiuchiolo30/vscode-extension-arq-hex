@@ -31,4 +31,4 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: npm run deploy
       env:
-        VSCE_PAT: ${{ secrets.YOUR_SECRET_NAME }}
+        YOUR_SECRET_NAME: ${{ secrets.YOUR_SECRET_NAME }}
