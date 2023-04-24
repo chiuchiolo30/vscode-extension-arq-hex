@@ -262,7 +262,8 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		
 			let currentDir = path.resolve(__dirname, '../');
-
+			
+			console.log(`currentDir ${currentDir}`);
 			// Valido que se encuentre en el directorio raiz del proyecto.
 			if(!fs.existsSync(path.join(currentDir, 'pubspec.yaml'))) {
 				vscode.window.showInformationMessage('No se encontró el archivo pubspec.yaml. Debes ejecutar este script desde el directorio raíz de tu proyecto de Flutter.');
