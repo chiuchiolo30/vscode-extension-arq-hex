@@ -254,18 +254,18 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.window.showInputBox({ prompt: 'Enter the feature name' }).then(async featureName => {
 
-		let currentDir = '';
+		var currentDir = vscode.workspace.rootPath;
 
-		if (!vscode.workspace.rootPath) {
+		if (!currentDir) {
 			if (!vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders!.length === 0) {
-				vscode.window.showInformationMessage(`Error: No se pudo encontrar el directorio`);
+				vscode.window.showInformationMessage(`Error: No se pudo encontrar el directorio 1`);
 				return;
 			}
 			currentDir = vscode.workspace.workspaceFolders![0].uri.fsPath;
 		}
-
+		
 		if (currentDir.length === 0) {
-			vscode.window.showInformationMessage(`Error: No se pudo encontrar el directorio`);
+			vscode.window.showInformationMessage(`Error: No se pudo encontrar el directorio 2`);
 				return;
 		}
 
@@ -320,14 +320,19 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.window.showInputBox({ prompt: 'Enter the feature name' }).then(async featureName => {
 
-		let currentDir = '';
+		let currentDir = vscode.workspace.rootPath;;
 
-		if (!vscode.workspace.rootPath) {
+		if (!currentDir) {
 			if (!vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders!.length === 0) {
 				vscode.window.showInformationMessage(`Error: No se pudo encontrar el directorio`);
 				return;
 			}
 			currentDir = vscode.workspace.workspaceFolders![0].uri.fsPath;
+		}
+
+		if (currentDir.length === 0) {
+			vscode.window.showInformationMessage(`Error: No se pudo encontrar el directorio 2`);
+				return;
 		}
       
 		if (featureName) {
