@@ -253,7 +253,22 @@ export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand('flutter-arq-hex.createFeature', () =>  {
 
     vscode.window.showInputBox({ prompt: 'Enter the feature name' }).then(async featureName => {
-      
+
+		let currentDir = '';
+
+		if (!vscode.workspace.rootPath) {
+			if (!vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders!.length === 0) {
+				vscode.window.showInformationMessage(`Error: No se pudo encontrar el directorio`);
+				return;
+			}
+			currentDir = vscode.workspace.workspaceFolders![0].uri.fsPath;
+		}
+
+		if (currentDir.length === 0) {
+			vscode.window.showInformationMessage(`Error: No se pudo encontrar el directorio`);
+				return;
+		}
+
 		if (featureName) {
 
 			if (!/^[a-zA-Z0-9]+$/.test(featureName)) {
@@ -261,9 +276,8 @@ export function activate(context: vscode.ExtensionContext) {
 				return;
 			}
 		
-			let currentDir = path.resolve(__dirname, '../');
+			// let currentDir = path.resolve(__dirname, '../');
 			
-			console.log(`currentDir ${currentDir}`);
 			// Valido que se encuentre en el directorio raiz del proyecto.
 			if(!fs.existsSync(path.join(currentDir, 'pubspec.yaml'))) {
 				vscode.window.showInformationMessage('No se encontró el archivo pubspec.yaml. Debes ejecutar este script desde el directorio raíz de tu proyecto de Flutter.');
@@ -305,6 +319,16 @@ export function activate(context: vscode.ExtensionContext) {
   let disposable2 = vscode.commands.registerCommand('flutter-arq-hex.createFeatureWithCrud', () =>  {
 
     vscode.window.showInputBox({ prompt: 'Enter the feature name' }).then(async featureName => {
+
+		let currentDir = '';
+
+		if (!vscode.workspace.rootPath) {
+			if (!vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders!.length === 0) {
+				vscode.window.showInformationMessage(`Error: No se pudo encontrar el directorio`);
+				return;
+			}
+			currentDir = vscode.workspace.workspaceFolders![0].uri.fsPath;
+		}
       
 		if (featureName) {
 
@@ -313,7 +337,7 @@ export function activate(context: vscode.ExtensionContext) {
 				return;
 			}
 		
-			let currentDir = path.resolve(__dirname, '../');
+			// let currentDir = path.resolve(__dirname, '../');
 
 			// Valido que se encuentre en el directorio raiz del proyecto.
 			if(!fs.existsSync(path.join(currentDir, 'pubspec.yaml'))) {
