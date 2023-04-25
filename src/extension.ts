@@ -22,20 +22,20 @@ const createProjectFolders = async (rootPath: string, projectName: string, crud:
 	fs.mkdirSync(path.join(rootPath, `${data}/datasources/remote`), { recursive: true });
 	
 
-	fs.mkdirSync(path.join(rootPath, `${data}/dto`), { recursive: true });
+	fs.mkdirSync(path.join(rootPath, `${data}/models`), { recursive: true });
 	fs.mkdirSync(path.join(rootPath, `${data}/repositories`), { recursive: true });
 
 	const f1 = fs.openSync(`${path.join(rootPath, `${data}/datasources/index.dart`)}`,'w');
 	fs.closeSync(f1);
 
-	const f2 = fs.openSync(`${path.join(rootPath, `${data}/dto/index.dart`)}`,'w');
+	const f2 = fs.openSync(`${path.join(rootPath, `${data}/models/index.dart`)}`,'w');
 	fs.closeSync(f2);
 	
 	const f3 = fs.openSync(`${path.join(rootPath, `${data}/repositories/${feature}.repository_impl.dart`)}`,'w');
 	fs.closeSync(f3);
 
 	let fileContentData = `export 'package:${projectName}/features/${feature}/data/datasources/index.dart';\n`;
-	fileContentData += `export 'package:${projectName}/features/${feature}/data/dto/index.dart';\n`;
+	fileContentData += `export 'package:${projectName}/features/${feature}/data/models/index.dart';\n`;
 	fileContentData += `export 'package:${projectName}/features/${feature}/data/repositories/${feature}.repository_impl.dart';`;
 
 	fs.writeFileSync(`${path.join(rootPath, `${data}/index.dart`)}`, fileContentData);
