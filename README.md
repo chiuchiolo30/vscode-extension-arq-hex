@@ -7,7 +7,7 @@
 
 Esta extensión genera una estructura de carpetas y archivos para implementar la arquitectura limpia (Clean Architecture) en proyectos de Dart.
 
-![Clean Architecture](./screenshots/arq.png)
+![Clean Architecture](/c/Users/Edgardo/flutter-arq-hex/screenshots/screenshots/arq.png)
 
 
 ## Características
