@@ -11,10 +11,18 @@
     "vscode": "^1.77.0"
   },
   "categories": [
+    "Programming Languages",
+    "Extension Packs",
     "Other"
   ],
+  "icon": "images/logo-vs.png",
+  "galleryBanner": {
+    "color": "#C80000",
+    "theme": "dark"
+  },
   "bugs": {
-    "url": "https://github.com/chiuchiolo30/vscode-extension-arq-hex/issues"
+    "url": "https://github.com/chiuchiolo30/vscode-extension-arq-hex/issues",
+    "email": "chiuchiolo30@gmail.com"
   },
   "homepage": "https://github.com/chiuchiolo30/vscode-extension-arq-hex/blob/master/README.md",
   "repository": {
@@ -27,10 +35,6 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "icon": {
-      "light": "./images/logo-vs.png",
-      "dark": "./images/logo-vs.png"
-    },
     "commands": [
       {
         "command": "flutter-arq-hex.createFeature",
