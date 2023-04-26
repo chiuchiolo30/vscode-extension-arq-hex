@@ -6,6 +6,15 @@
 
 Esta extensión genera una estructura de carpetas y archivos para implementar la arquitectura limpia (Clean Architecture) en proyectos de Dart.
 
+<table align="">
+    <th>Estructuras de carpetas</th>   
+    <tr>
+        <td>
+            <img src="./screenshots/arq.png" alt="Clean Architecture"/>
+        </td>
+    </tr>
+</table>
+
 ## Características
 * Genera la estructura básica de carpetas y archivos para la capa de datos (Data), la capa de dominio (Domain) y la capa de interfaz de usuario (UI).
 * Crea un archivo index.dart en cada carpeta que exporta todos los archivos de esa carpeta.
@@ -27,6 +36,28 @@ Busca la extensión "flutter-arq-hex" y pulsa en "Instalar".
 5) Busca el comando "Clean Architecture - Create feature without CRUD" y pulsa en "Ejecutar".
 6) Introduce el nombre de la feature (que será utilizado para generar los imports de tus archivos).
 7) Si deseas generar las operaciones CRUD, busca el comando "Clean Architecture - Create feature with CRUD" y pulsa en "Ejecutar".
+8) Si deseas generar una caso de uso busca el comando "Clean Architecture - Create use case" y pulsa en "Ejecutar".
+
+<table align="center">
+    <th>Crear una nueva carateristica sin el CRUD</th>   
+    <tr>
+        <td>
+            <img src="./screenshots/sin_crud.gif" alt="sin crud"/>
+        </td>
+    </tr>
+    <th>Crear una nueva carateristica con el CRUD</th>   
+    <tr>
+        <td>
+            <img src="./screenshots/con-crud.gif" alt="con crud"/>
+        </td>
+    </tr>
+    <th>Crear un caso de uso dentro de una feature</th>   
+    <tr>
+        <td>
+            <img src="./screenshots/new-feature.gif" alt="new feature"/>
+        </td>
+    </tr>
+</table>
 
 ¡Listo! La estructura de carpetas y archivos para la arquitectura limpia ha sido generada. Puedes empezar a implementar tus clases y métodos.
 
