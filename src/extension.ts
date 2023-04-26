@@ -252,7 +252,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   let disposable = vscode.commands.registerCommand('flutter-arq-hex.createFeature', () =>  {
 
-    vscode.window.showInputBox({ prompt: 'Enter the feature name' }).then(async featureName => {
+    vscode.window.showInputBox({ prompt: 'Ingrese el nombre de la feature por crear' }).then(async featureName => {
 
 		var currentDir = vscode.workspace.rootPath;
 
@@ -271,7 +271,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		if (featureName) {
 
-			if (!/^[a-zA-Z0-9]+$/.test(featureName)) {
+			if (!/^[a-zA-Z0-9_-]+$/.test(featureName)) {
 				vscode.window.showInformationMessage('Error: El nombre debe ser solo una palabra sin espacios');
 				return;
 			}
@@ -318,7 +318,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   let disposable2 = vscode.commands.registerCommand('flutter-arq-hex.createFeatureWithCrud', () =>  {
 
-    vscode.window.showInputBox({ prompt: 'Enter the feature name' }).then(async featureName => {
+    vscode.window.showInputBox({ prompt: 'Ingrese el nombre de la feature por crear' }).then(async featureName => {
 
 		let currentDir = vscode.workspace.rootPath;;
 
@@ -337,7 +337,7 @@ export function activate(context: vscode.ExtensionContext) {
       
 		if (featureName) {
 
-			if (!/^[a-zA-Z0-9]+$/.test(featureName)) {
+			if (!/^[a-zA-Z0-9_-]+$/.test(featureName)) {
 				vscode.window.showInformationMessage('Error: El nombre debe ser solo una palabra sin espacios');
 				return;
 			}
@@ -384,7 +384,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   let disposable3 = vscode.commands.registerCommand('flutter-arq-hex.createUseCase', () =>  {
 
-    vscode.window.showInputBox({ prompt: 'Enter the feature name' }).then(async featureName => {
+    vscode.window.showInputBox({ prompt: 'Ingrese el nombre de la feature que contendra el caso de uso' }).then(async featureName => {
 
 		var currentDir = vscode.workspace.rootPath;
 
@@ -397,35 +397,35 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		if (currentDir.length === 0) {
-			vscode.window.showInformationMessage(`You must start a Flutter project`);
+			vscode.window.showInformationMessage(`Debes iniciar un proyecto de Flutter`);
 			return;
 		}
 		
 		// Valido que se encuentre en el directorio raiz del proyecto.
 		if(!fs.existsSync(path.join(currentDir, 'pubspec.yaml'))) {
-			vscode.window.showInformationMessage('The pubspec.yaml file was not found. You must run this script from the root directory of your Flutter project.');
+			vscode.window.showInformationMessage('No se encontró el archivo pubspec.yaml. Debe ejecutar la extension desde el directorio raíz de su proyecto Flutter.');
 			return;
 		}
 		if(!fs.existsSync(path.join(currentDir, 'pubspec.yaml'))) {
-			vscode.window.showInformationMessage('The pubspec.yaml file was not found. You must run this script from the root directory of your Flutter project.');
+			vscode.window.showInformationMessage('No se encontró el archivo pubspec.yaml. Debe ejecutar la extension desde el directorio raíz de su proyecto Flutter.');
 			return;
 		}
 		if(!fs.existsSync(path.join(currentDir, 'lib'))) {
-			vscode.window.showInformationMessage('The \'lib \'directory was not found.');
+			vscode.window.showInformationMessage('No se encontró el directorio \'lib \'.');
 			return;
 		}
 		if(!fs.existsSync(path.join(currentDir, 'lib/features'))) {
-			vscode.window.showInformationMessage('The \'features\' directory was not found.');
+			vscode.window.showInformationMessage('No se encontró el directorio \'features\'.');
 			return;
 		}
 
 		if(featureName) {
 			if(!fs.existsSync(path.join(currentDir, `lib/features/${transformInput(featureName)}`))) {
-				vscode.window.showInformationMessage(`No feature found: ${featureName}`);
+				vscode.window.showInformationMessage(`No se encontró ninguna feature: ${featureName}`);
 				return;
 			}
 			if (!/^[a-zA-Z0-9_-]+$/.test(featureName)) {
-				vscode.window.showInformationMessage('Error: Name must be just one word with no spaces.');
+				vscode.window.showInformationMessage('Error: Ingrese un nombre válido.');
 				return;
 			}
 
@@ -433,13 +433,13 @@ export function activate(context: vscode.ExtensionContext) {
 				
 				if(useCase) {
 					if (!/^[a-zA-Z0-9_-]+$/.test(useCase)) {
-						vscode.window.showInformationMessage('Error: Name must be just one word with no spaces.');
+						vscode.window.showInformationMessage('Error: Ingrese un nombre válido.');
 						return;
 					}
 				}
 
 				if(fs.existsSync(path.join(currentDir!, `lib/features/${transformInput(featureName)}/domain/usecases/${transformInput(useCase!)}.usecase.dart`))) {
-					vscode.window.showInformationMessage(`\'${transformInput(useCase!)}\' use case already exists`);
+					vscode.window.showInformationMessage(`El caso de uso \'${transformInput(useCase!)}\' ya existe`);
 					return;
 				}
 
@@ -454,12 +454,8 @@ export function activate(context: vscode.ExtensionContext) {
 					if (err) {
 						if (err.code === 'ENOENT') {
 						// El archivo no existe, escribir en el archivo directamente
-							const content = `
-							abstract class ${transformOutput(featureName)}Repository {
-
-								Future<T> ${useCase?.toLowerCase()}<T>();
-							
-							}`;
+							let content  = `\n\nabstract class ${transformOutput(featureName)}Repository {\n\n`;
+								content += `\tFuture<T> ${useCase?.toLowerCase()}<T>();\n\n}`;
 							
 							fs.writeFile(path.join(currentDir!,`lib/features/${transformInput(featureName)}/domain/repositories/${transformInput(featureName)}.repository.dart`), content, 'utf8', err => {
 								if (err) {
@@ -502,18 +498,12 @@ export function activate(context: vscode.ExtensionContext) {
 					if (err) {
 						if (err.code === 'ENOENT') {
 						// El archivo no existe, escribir en el archivo directamente
-							const content2 = `
-							import 'package:${PROJECT_NAME}/features/${transformInput(featureName)}/domain/index.dart';				
-
-							class ${transformOutput(featureName)}RepositoryImpl extends ${transformOutput(featureName)}Repository {
-
-								@override
-								Future<T> ${useCase?.toLowerCase()}<T>() async {
-								\/\/ TODO: implement ${useCase?.toLowerCase()}
-								throw UnimplementedError();
-								}
-
-							}`;
+							let content2  = `import 'package:${PROJECT_NAME}/features/${transformInput(featureName)}/domain/index.dart';\n\n`;
+							content2 += `class ${transformOutput(featureName)}RepositoryImpl extends ${transformOutput(featureName)}Repository {\n\n`;
+							content2 += `\t@override\n`;
+							content2 += `\tFuture<T> ${useCase?.toLowerCase()}<T>() async {\n\n`;
+							content2 += `\t\t\/\/ TODO: implement ${useCase?.toLowerCase()}\n`;
+							content2 += `\t\tthrow UnimplementedError();\n\n\t}\n\n}`;
 								
 							fs.writeFile(path.join(currentDir!,`lib/features/${transformInput(featureName)}/data/repositories/${transformInput(featureName)}.repository_impl.dart`), content2, 'utf8', err => {
 								if (err) {
@@ -543,11 +533,7 @@ export function activate(context: vscode.ExtensionContext) {
 							});
 						} else {
 							// El archivo tiene contenido, hacer algo aquí
-							const newData = data.replace(/}\s*$/, `  @override
-							Future<T> ${useCase?.toLowerCase()}<T>() async {
-							\/\/ TODO: implement ${useCase?.toLowerCase()}
-							throw UnimplementedError();
-							}\n}`);
+							const newData = data.replace(/}\s*$/, `\n\t@override\n\tFuture<T> ${useCase?.toLowerCase()}<T>() async {\n\t\t\/\/ TODO: implement ${useCase?.toLowerCase()}\n\t\tthrow UnimplementedError();\n\t}\n}`);
 							fs.writeFile(path.join(currentDir!,`lib/features/${transformInput(featureName)}/data/repositories/${transformInput(featureName)}.repository_impl.dart`), newData, 'utf8', err => {
 								if (err) {
 									console.error(err);
@@ -566,16 +552,6 @@ export function activate(context: vscode.ExtensionContext) {
 				    usecase += `\tconst ${transformOutput(useCase!)}Usecase(this.repository);\n\n`;
 				    usecase += `\tfinal ${transformOutput(featureName)}Repository repository;\n\n`;
 				    usecase += `\tFuture<T> call<T>() async => repository.${useCase?.toLowerCase()}();\n\n}`;
-				// const usecase = `
-				// ${repository}
-				
-				// class ${transformOutput(useCase!)}Usecase {
-				// 	const ${transformOutput(useCase!)}Usecase(this.repository);
-			
-				// 	final ${transformOutput(featureName)}Repository repository;
-			
-				// 	Future<T> call<T>() async => repository.${useCase?.toLowerCase()}();
-				// }`;
 
 				fs.writeFile(`${path.join(currentDir!, `lib/features/${transformInput(featureName)}/domain/usecases/${transformInput(useCase!)}.usecase.dart`)}`, usecase, (err) => {
 					if (err) {
