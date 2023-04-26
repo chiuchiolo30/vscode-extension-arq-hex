@@ -39,6 +39,10 @@
       {
         "command": "flutter-arq-hex.createFeatureWithCrud",
         "title": "Clean Architecture - Create feature with CRUD"
+      },
+      {
+        "command": "flutter-arq-hex.createUseCase",
+        "title": "Clean Architecture - Create use case"
       }
     ]
   },

@@ -382,8 +382,219 @@ export function activate(context: vscode.ExtensionContext) {
     });
   });
 
+  let disposable3 = vscode.commands.registerCommand('flutter-arq-hex.createUseCase', () =>  {
+
+    vscode.window.showInputBox({ prompt: 'Enter the feature name' }).then(async featureName => {
+
+		var currentDir = vscode.workspace.rootPath;
+
+		if (!currentDir) {
+			if (!vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders!.length === 0) {
+				vscode.window.showInformationMessage(`You must start a Flutter project`);
+				return;
+			}
+			currentDir = vscode.workspace.workspaceFolders![0].uri.fsPath;
+		}
+
+		if (currentDir.length === 0) {
+			vscode.window.showInformationMessage(`You must start a Flutter project`);
+			return;
+		}
+		
+		// Valido que se encuentre en el directorio raiz del proyecto.
+		if(!fs.existsSync(path.join(currentDir, 'pubspec.yaml'))) {
+			vscode.window.showInformationMessage('The pubspec.yaml file was not found. You must run this script from the root directory of your Flutter project.');
+			return;
+		}
+		if(!fs.existsSync(path.join(currentDir, 'pubspec.yaml'))) {
+			vscode.window.showInformationMessage('The pubspec.yaml file was not found. You must run this script from the root directory of your Flutter project.');
+			return;
+		}
+		if(!fs.existsSync(path.join(currentDir, 'lib'))) {
+			vscode.window.showInformationMessage('The \'lib \'directory was not found.');
+			return;
+		}
+		if(!fs.existsSync(path.join(currentDir, 'lib/features'))) {
+			vscode.window.showInformationMessage('The \'features\' directory was not found.');
+			return;
+		}
+
+		if(featureName) {
+			if(!fs.existsSync(path.join(currentDir, `lib/features/${transformInput(featureName)}`))) {
+				vscode.window.showInformationMessage(`No feature found: ${featureName}`);
+				return;
+			}
+			if (!/^[a-zA-Z0-9_-]+$/.test(featureName)) {
+				vscode.window.showInformationMessage('Error: Name must be just one word with no spaces.');
+				return;
+			}
+
+			vscode.window.showInputBox({ prompt: 'Enter the use case name'}).then(async useCase => {
+				
+				if(useCase) {
+					if (!/^[a-zA-Z0-9_-]+$/.test(useCase)) {
+						vscode.window.showInformationMessage('Error: Name must be just one word with no spaces.');
+						return;
+					}
+				}
+
+				if(fs.existsSync(path.join(currentDir!, `lib/features/${transformInput(featureName)}/domain/usecases/${transformInput(useCase!)}.usecase.dart`))) {
+					vscode.window.showInformationMessage(`\'${transformInput(useCase!)}\' use case already exists`);
+					return;
+				}
+
+				// Obtengo el nombre del proyecto
+				const pubspecPath 		= path.join(currentDir!, 'pubspec.yaml');
+				const pubspecContents 	= fs.readFileSync(pubspecPath, 'utf8');
+				const projectName 		= pubspecContents.match(/name: (.+)/)![1] ;
+				const PROJECT_NAME 		= projectName.trim();
+
+				// Valido que exista el repositorio (firma)
+				fs.readFile(path.join(currentDir!,`lib/features/${transformInput(featureName)}/domain/repositories/${transformInput(featureName)}.repository.dart`), 'utf8', (err, data) => {
+					if (err) {
+						if (err.code === 'ENOENT') {
+						// El archivo no existe, escribir en el archivo directamente
+							const content = `
+							abstract class ${transformOutput(featureName)}Repository {
+
+								Future<T> ${useCase?.toLowerCase()}<T>();
+							
+							}`;
+							
+							fs.writeFile(path.join(currentDir!,`lib/features/${transformInput(featureName)}/domain/repositories/${transformInput(featureName)}.repository.dart`), content, 'utf8', err => {
+								if (err) {
+									console.error(err);
+									return;
+								}								
+							});
+						} else {
+							vscode.window.showInformationMessage(`No se pudo crear el repositorio firma: ${err}`);
+							return;
+						}
+					} else {
+						// El archivo existe, verificar si el contenido es nulo o una cadena vacía
+						if (!data.trim()) {
+
+							let content  = `\n\nabstract class ${transformOutput(featureName)}Repository {\n\n`;
+								content += `\tFuture<T> ${useCase?.toLowerCase()}<T>();\n\n}`;
+								
+							fs.writeFile(path.join(currentDir!,`lib/features/${transformInput(featureName)}/domain/repositories/${transformInput(featureName)}.repository.dart`), content, 'utf8', err => {
+								if (err) {
+									console.error(err);
+									return;
+								}
+							});
+						} else {
+							// El archivo tiene contenido, hacer algo aquí
+							const newData = data.replace(/}\s*$/, `  Future<T> ${useCase?.toLowerCase()}<T>();\n}`);
+							fs.writeFile(path.join(currentDir!,`lib/features/${transformInput(featureName)}/domain/repositories/${transformInput(featureName)}.repository.dart`), newData, 'utf8', err => {
+								if (err) {
+									console.error(err);
+									return;
+								}
+							});
+						}
+					}
+				});
+
+				// Valido que exista el repositorio (implementación)
+				fs.readFile(path.join(currentDir!,`lib/features/${transformInput(featureName)}/data/repositories/${transformInput(featureName)}.repository_impl.dart`), 'utf8', (err, data) => {
+					if (err) {
+						if (err.code === 'ENOENT') {
+						// El archivo no existe, escribir en el archivo directamente
+							const content2 = `
+							import 'package:${PROJECT_NAME}/features/${transformInput(featureName)}/domain/index.dart';				
+
+							class ${transformOutput(featureName)}RepositoryImpl extends ${transformOutput(featureName)}Repository {
+
+								@override
+								Future<T> ${useCase?.toLowerCase()}<T>() async {
+								\/\/ TODO: implement ${useCase?.toLowerCase()}
+								throw UnimplementedError();
+								}
+
+							}`;
+								
+							fs.writeFile(path.join(currentDir!,`lib/features/${transformInput(featureName)}/data/repositories/${transformInput(featureName)}.repository_impl.dart`), content2, 'utf8', err => {
+								if (err) {
+									console.error(err);
+									return;
+								}								
+							});
+						} else {
+							vscode.window.showInformationMessage(`No se pudo crear el repositorio implementación: ${err}`);
+							return;
+						}
+					} else {
+						// El archivo existe, verificar si el contenido es nulo o una cadena vacía
+						if (!data.trim()) {
+							let content2  = `import 'package:${PROJECT_NAME}/features/${transformInput(featureName)}/domain/index.dart';\n\n`;
+								content2 += `class ${transformOutput(featureName)}RepositoryImpl extends ${transformOutput(featureName)}Repository {\n\n`;
+								content2 += `\t@override\n`;
+								content2 += `\tFuture<T> ${useCase?.toLowerCase()}<T>() async {\n\n`;
+								content2 += `\t\t\/\/ TODO: implement ${useCase?.toLowerCase()}\n`;
+								content2 += `\t\tthrow UnimplementedError();\n\n\t}\n\n}`;
+
+							fs.writeFile(path.join(currentDir!,`lib/features/${transformInput(featureName)}/data/repositories/${transformInput(featureName)}.repository_impl.dart`), content2, 'utf8', err => {
+								if (err) {
+									console.error(err);
+									return;
+								}
+							});
+						} else {
+							// El archivo tiene contenido, hacer algo aquí
+							const newData = data.replace(/}\s*$/, `  @override
+							Future<T> ${useCase?.toLowerCase()}<T>() async {
+							\/\/ TODO: implement ${useCase?.toLowerCase()}
+							throw UnimplementedError();
+							}\n}`);
+							fs.writeFile(path.join(currentDir!,`lib/features/${transformInput(featureName)}/data/repositories/${transformInput(featureName)}.repository_impl.dart`), newData, 'utf8', err => {
+								if (err) {
+									console.error(err);
+									return;
+								}
+							});
+						}
+					}
+				});
+				
+				// Creo el caso de uso
+				const repository = `import 'package:${PROJECT_NAME}/features/${transformInput(featureName)}/domain/repositories/${transformInput(featureName)}.repository.dart';`;
+
+				let usecase  = `${repository}\n\n`;
+				    usecase += `class ${transformOutput(useCase!)}Usecase {\n`;
+				    usecase += `\tconst ${transformOutput(useCase!)}Usecase(this.repository);\n\n`;
+				    usecase += `\tfinal ${transformOutput(featureName)}Repository repository;\n\n`;
+				    usecase += `\tFuture<T> call<T>() async => repository.${useCase?.toLowerCase()}();\n\n}`;
+				// const usecase = `
+				// ${repository}
+				
+				// class ${transformOutput(useCase!)}Usecase {
+				// 	const ${transformOutput(useCase!)}Usecase(this.repository);
+			
+				// 	final ${transformOutput(featureName)}Repository repository;
+			
+				// 	Future<T> call<T>() async => repository.${useCase?.toLowerCase()}();
+				// }`;
+
+				fs.writeFile(`${path.join(currentDir!, `lib/features/${transformInput(featureName)}/domain/usecases/${transformInput(useCase!)}.usecase.dart`)}`, usecase, (err) => {
+					if (err) {
+						console.error(err);
+						return;
+					}
+
+					vscode.window.showInformationMessage(`Se creo correctamente el caso de uso: ${useCase}`);
+					
+				});
+			});
+		}
+
+    });
+  });
+
   context.subscriptions.push(disposable);
   context.subscriptions.push(disposable2);
+  context.subscriptions.push(disposable3);
 }
 
 // This method is called when your extension is deactivated
