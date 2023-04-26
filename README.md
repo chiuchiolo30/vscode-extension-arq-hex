@@ -4,10 +4,9 @@
     <a href="https://github.com/chiuchiolo30/vscode-extension-arq-hex/actions/workflows/pipeline.yaml"><img src="https://github.com/chiuchiolo30/vscode-extension-arq-hex/actions/workflows/pipeline.yaml/badge.svg" alt="Deployment Pipeline"></a>    
 </p>
 
+![Clean Architecture](screenshots/arq.png)
 
 Esta extensión genera una estructura de carpetas y archivos para implementar la arquitectura limpia (Clean Architecture) en proyectos de Dart.
-
-![Clean Architecture](/c/Users/Edgardo/flutter-arq-hex/screenshots/screenshots/arq.png)
 
 
 ## Características
@@ -33,13 +32,13 @@ Busca la extensión "flutter-arq-hex" y pulsa en "Instalar".
 7) Si deseas generar las operaciones CRUD, busca el comando "Clean Architecture - Create feature with CRUD" y pulsa en "Ejecutar".
 8) Si deseas generar una caso de uso busca el comando "Clean Architecture - Create use case" y pulsa en "Ejecutar".
 ## Crear una nueva carateristica sin el CRUD
-![sin crud](./screenshots/sin_crud.gif)
+![sin crud](screenshots/sin_crud.gif)
 
 ## Crear una nueva carateristica con el CRUD
-![con crud](./screenshots/con-crud.gif)
+![con crud](screenshots/con-crud.gif)
 
 ## Crear un caso de uso dentro de una feature
-![new feature](./screenshots/new-feature.gif)
+![new feature](screenshots/new-feature.gif)
 
 ¡Listo! La estructura de carpetas y archivos para la arquitectura limpia ha sido generada. Puedes empezar a implementar tus clases y métodos.
 
