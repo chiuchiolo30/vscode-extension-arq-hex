@@ -320,7 +320,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.window.showInputBox({ prompt: 'Ingrese el nombre de la feature por crear' }).then(async featureName => {
 
-		let currentDir = vscode.workspace.rootPath;;
+                let currentDir = vscode.workspace.rootPath;
 
 		if (!currentDir) {
 			if (!vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders!.length === 0) {
