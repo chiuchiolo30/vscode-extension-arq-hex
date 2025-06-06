@@ -420,14 +420,10 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		
 		// Valido que se encuentre en el directorio raiz del proyecto.
-		if(!fs.existsSync(path.join(currentDir, 'pubspec.yaml'))) {
-			vscode.window.showInformationMessage('No se encontró el archivo pubspec.yaml. Debe ejecutar la extension desde el directorio raíz de su proyecto Flutter.');
-			return;
-		}
-		if(!fs.existsSync(path.join(currentDir, 'pubspec.yaml'))) {
-			vscode.window.showInformationMessage('No se encontró el archivo pubspec.yaml. Debe ejecutar la extension desde el directorio raíz de su proyecto Flutter.');
-			return;
-		}
+                if(!fs.existsSync(path.join(currentDir, 'pubspec.yaml'))) {
+                        vscode.window.showInformationMessage('No se encontró el archivo pubspec.yaml. Debe ejecutar la extension desde el directorio raíz de su proyecto Flutter.');
+                        return;
+                }
 		if(!fs.existsSync(path.join(currentDir, 'lib'))) {
 			vscode.window.showInformationMessage('No se encontró el directorio \'lib \'.');
 			return;
