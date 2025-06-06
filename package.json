@@ -1,5 +1,5 @@
 {
-  "name": "dart-clena-architecture-hex",
+  "name": "dart-clean-architecture-hex",
   "displayName": "Dart Clean Architecture - Arq. Hex.",
   "publisher": "FlutterCleanArchitecture",
   "description": "Esta extensión genera una estructura de carpetas y archivos para implementar la arquitectura limpia (Clean Architecture) en proyectos de Dart.",
