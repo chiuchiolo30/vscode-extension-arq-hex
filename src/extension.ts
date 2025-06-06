@@ -25,14 +25,20 @@ const createProjectFolders = async (rootPath: string, projectName: string, crud:
 	fs.mkdirSync(path.join(rootPath, `${data}/models`), { recursive: true });
 	fs.mkdirSync(path.join(rootPath, `${data}/repositories`), { recursive: true });
 
-	const f1 = fs.openSync(`${path.join(rootPath, `${data}/datasources/index.dart`)}`,'w');
-	fs.closeSync(f1);
+        fs.writeFileSync(
+                `${path.join(rootPath, `${data}/datasources/index.dart`)}`,
+                ''
+        );
 
-	const f2 = fs.openSync(`${path.join(rootPath, `${data}/models/index.dart`)}`,'w');
-	fs.closeSync(f2);
-	
-	const f3 = fs.openSync(`${path.join(rootPath, `${data}/repositories/${feature}.repository_impl.dart`)}`,'w');
-	fs.closeSync(f3);
+        fs.writeFileSync(
+                `${path.join(rootPath, `${data}/models/index.dart`)}`,
+                ''
+        );
+
+        fs.writeFileSync(
+                `${path.join(rootPath, `${data}/repositories/${feature}.repository_impl.dart`)}`,
+                ''
+        );
 
 	let fileContentData = `export 'package:${projectName}/features/${feature}/data/datasources/index.dart';\n`;
 	fileContentData += `export 'package:${projectName}/features/${feature}/data/models/index.dart';\n`;
@@ -46,14 +52,20 @@ const createProjectFolders = async (rootPath: string, projectName: string, crud:
 	fs.mkdirSync(path.join(rootPath, `${domain}/usecases`), { recursive: true });
 	fs.mkdirSync(path.join(rootPath, `${domain}/repositories`), { recursive: true });
 
-	const f4 = fs.openSync(`${path.join(rootPath, `${domain}/entities/index.dart`)}`,'w');
-	fs.closeSync(f4);
+        fs.writeFileSync(
+                `${path.join(rootPath, `${domain}/entities/index.dart`)}`,
+                ''
+        );
 
-	const f5 = fs.openSync(`${path.join(rootPath, `${domain}/usecases/index.dart`)}`,'w');
-	fs.closeSync(f5);
+        fs.writeFileSync(
+                `${path.join(rootPath, `${domain}/usecases/index.dart`)}`,
+                ''
+        );
 
-	const f6 = fs.openSync(`${path.join(rootPath, `${domain}/repositories/${feature}.repository.dart`)}`,'w');
-	fs.closeSync(f6);
+        fs.writeFileSync(
+                `${path.join(rootPath, `${domain}/repositories/${feature}.repository.dart`)}`,
+                ''
+        );
 
 	if (crud) {
 		const name = transformOutput(feature);
@@ -224,14 +236,20 @@ const createProjectFolders = async (rootPath: string, projectName: string, crud:
 	fs.mkdirSync(path.join(rootPath, `${ui}/screens`), { recursive: true });
 	fs.mkdirSync(path.join(rootPath, `${ui}/widgets`), { recursive: true });
 
-	let f7 = fs.openSync(`${path.join(rootPath, `${ui}/blocs/index.dart`)}`,'w');
-	fs.closeSync(f7);
+        fs.writeFileSync(
+                `${path.join(rootPath, `${ui}/blocs/index.dart`)}`,
+                ''
+        );
 
-	let f8 = fs.openSync(`${path.join(rootPath, `${ui}/screens/index.dart`)}`,'w');
-	fs.closeSync(f8);
+        fs.writeFileSync(
+                `${path.join(rootPath, `${ui}/screens/index.dart`)}`,
+                ''
+        );
 
-	let f9 = fs.openSync(`${path.join(rootPath, `${ui}/widgets/index.dart`)}`,'w');
-	fs.closeSync(f9);
+        fs.writeFileSync(
+                `${path.join(rootPath, `${ui}/widgets/index.dart`)}`,
+                ''
+        );
 
 	let fileContentUi = `export 'package:${projectName}/features/${feature}/ui/blocs/index.dart';\n`;
 	fileContentUi += `export 'package:${projectName}/features/${feature}/ui/screens/index.dart';\n`;
