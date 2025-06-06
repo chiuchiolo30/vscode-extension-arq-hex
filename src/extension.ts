@@ -1,6 +1,21 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import { parse } from 'yaml';
+
+const getProjectName = (projectDir: string): string | undefined => {
+    try {
+        const pubspecPath = path.join(projectDir, 'pubspec.yaml');
+        const pubspecContents = fs.readFileSync(pubspecPath, 'utf8');
+        const data = parse(pubspecContents) as { name?: string } | undefined;
+        if (data && typeof data.name === 'string') {
+            return data.name.trim();
+        }
+    } catch (err) {
+        console.error('Failed to parse pubspec.yaml:', err);
+    }
+    return undefined;
+};
 
 
 const transformInput  = (input: string) => input.replace(/([a-z\d])([A-Z])/g, '$1_$2').toLowerCase();
@@ -285,10 +300,11 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 
 			// Obtengo el nombre del proyecto
-			const pubspecPath 		= path.join(currentDir, 'pubspec.yaml');
-			const pubspecContents 	= fs.readFileSync(pubspecPath, 'utf8');
-			const projectName 		= pubspecContents.match(/name: (.+)/)![1] ;
-			const PROJECT_NAME 		= projectName.trim();
+			const PROJECT_NAME = getProjectName(currentDir);
+			if (!PROJECT_NAME) {
+				vscode.window.showInformationMessage("No se pudo determinar el nombre del proyecto desde pubspec.yaml.");
+				return;
+			}
 
 			// Si no existe el directorio [lib] lo creo
 			if(!fs.existsSync(path.join(currentDir, 'lib'))) {
@@ -351,10 +367,11 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 
 			// Obtengo el nombre del proyecto
-			const pubspecPath 		= path.join(currentDir, 'pubspec.yaml');
-			const pubspecContents 	= fs.readFileSync(pubspecPath, 'utf8');
-			const projectName 		= pubspecContents.match(/name: (.+)/)![1] ;
-			const PROJECT_NAME 		= projectName.trim();
+			const PROJECT_NAME = getProjectName(currentDir);
+			if (!PROJECT_NAME) {
+				vscode.window.showInformationMessage("No se pudo determinar el nombre del proyecto desde pubspec.yaml.");
+				return;
+			}
 
 			// Si no existe el directorio [lib] lo creo
 			if(!fs.existsSync(path.join(currentDir, 'lib'))) {
@@ -444,10 +461,11 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 
 				// Obtengo el nombre del proyecto
-				const pubspecPath 		= path.join(currentDir!, 'pubspec.yaml');
-				const pubspecContents 	= fs.readFileSync(pubspecPath, 'utf8');
-				const projectName 		= pubspecContents.match(/name: (.+)/)![1] ;
-				const PROJECT_NAME 		= projectName.trim();
+				const PROJECT_NAME = getProjectName(currentDir!);
+				if (!PROJECT_NAME) {
+					vscode.window.showInformationMessage("No se pudo determinar el nombre del proyecto desde pubspec.yaml.");
+					return;
+				}
 
 				// Valido que exista el repositorio (firma)
 				fs.readFile(path.join(currentDir!,`lib/features/${transformInput(featureName)}/domain/repositories/${transformInput(featureName)}.repository.dart`), 'utf8', (err, data) => {
