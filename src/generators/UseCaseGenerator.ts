@@ -76,7 +76,9 @@ export class UseCaseGenerator {
         fs.writeFileSync(repositoryPath, content);
       } else {
         // Si ya existe, no lo duplicamos
-        if (new RegExp(`\\b${methodName}<T>\\(\\);`).test(data)) return;
+        if (new RegExp(`\\b${methodName}<T>\\(\\);`).test(data)) {
+          return;
+        }
 
         const newData = data.replace(
           /}\s*$/,
@@ -126,7 +128,9 @@ export class UseCaseGenerator {
         fs.writeFileSync(repositoryImplPath, content);
       } else {
         // Evitar duplicados
-        if (new RegExp(`\\b${methodName}<T>\\(\\)`).test(data)) return;
+        if (new RegExp(`\\b${methodName}<T>\\(\\)`).test(data)) {
+          return;
+        }
 
         const methodImplementation = `
 \t@override
