@@ -1,12 +1,12 @@
 {
   "name": "dart-clean-architecture-hex",
-  "displayName": "Dart Clean Architecture - Arq. Hex.",
+  "displayName": "Flutter Clean Architecture (Melos Support)",
   "publisher": "FlutterCleanArchitecture",
-  "description": "Esta extensión genera una estructura de carpetas y archivos para implementar la arquitectura limpia (Clean Architecture) en proyectos de Dart.",
+  "description": "🏗️ Genera automáticamente Clean Architecture para Flutter/Dart. Soporte completo para Monorepos Melos. Ahorra tiempo con estructura organizada desde el día 1.",
   "author": {
     "name": "Chiuchiolo Sergio Edgardo"
   },
-  "version": "1.0.4",
+  "version": "1.1.0",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -30,6 +30,22 @@
       "url": "https://github.com/chiuchiolo30/vscode-extension-arq-hex"
   },
   "license": "MIT",
+  "keywords": [
+    "flutter",
+    "dart",
+    "clean architecture",
+    "hexagonal architecture",
+    "melos",
+    "monorepo",
+    "architecture",
+    "code generator",
+    "boilerplate",
+    "scaffold",
+    "domain driven design",
+    "ddd",
+    "use case",
+    "repository pattern"
+  ],
   "activationEvents": [
     "onLanguage:dart"
   ],
