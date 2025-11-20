@@ -84,7 +84,7 @@ Todo funciona exactamente igual que antes, sin cambios en tu workflow.
 
 ## 🔗 Links Útiles
 
-- **Marketplace**: [Flutter Clean Architecture](https://marketplace.visualstudio.com/items?itemName=FlutterCleanArchitecture.dart-clean-architecture-hex)
+- **Marketplace**: [Dart Clean Architecture - Arq. Hex](https://marketplace.visualstudio.com/items?itemName=FlutterCleanArchitecture.dart-clena-architecture-hex)
 - **Repositorio**: [GitHub](https://github.com/chiuchiolo30/vscode-extension-arq-hex)
 - **Issues**: [Reportar un problema](https://github.com/chiuchiolo30/vscode-extension-arq-hex/issues)
 - **Guía Melos**: [MELOS_GUIDE.md](https://github.com/chiuchiolo30/vscode-extension-arq-hex/blob/master/MELOS_GUIDE.md)
