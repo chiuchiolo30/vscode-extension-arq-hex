@@ -1,6 +1,6 @@
 {
-  "name": "dart-clean-architecture-hex",
-  "displayName": "Flutter Clean Architecture (Melos Support)",
+  "name": "dart-clena-architecture-hex",
+  "displayName": "Dart Clean Architecture - Arq. Hex.",
   "publisher": "FlutterCleanArchitecture",
   "description": "🏗️ Genera automáticamente Clean Architecture para Flutter/Dart. Soporte completo para Monorepos Melos. Ahorra tiempo con estructura organizada desde el día 1.",
   "author": {
