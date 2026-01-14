@@ -6,7 +6,7 @@
   "author": {
     "name": "Chiuchiolo Sergio Edgardo"
   },
-  "version": "1.1.0",
+  "version": "1.2.0",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -63,8 +63,51 @@
       {
         "command": "flutter-arq-hex.createUseCase",
         "title": "Clean Architecture - Create use case"
+      },
+      {
+        "command": "flutter-arq-hex.setStructureMode",
+        "title": "Clean Architecture: Set project structure mode"
+      },
+      {
+        "command": "flutter-arq-hex.togglePreview",
+        "title": "Clean Architecture: Toggle preview before generation"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Dart Clean Architecture",
+      "properties": {
+        "dartCleanArch.structure.mode": {
+          "type": "string",
+          "enum": ["featureFirst", "layerFirst"],
+          "default": "featureFirst",
+          "enumDescriptions": [
+            "Feature-First: lib/features/<feature>/domain|data|ui/...",
+            "Layer-First: lib/domain|data|ui/<feature>/..."
+          ],
+          "description": "Modo de estructura de proyecto por defecto. Feature-First agrupa por funcionalidad, Layer-First agrupa por capas."
+        },
+        "dartCleanArch.structure.autoDetect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Detectar automáticamente el modo de estructura del proyecto analizado la carpeta lib/."
+        },
+        "dartCleanArch.structure.promptOnAmbiguous": {
+          "type": "boolean",
+          "default": true,
+          "description": "Mostrar un diálogo de selección cuando se detecten ambos estilos de estructura en el proyecto."
+        },
+        "dartCleanArch.preview.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Mostrar una previsualización de archivos y carpetas antes de generar código (features, use cases, CRUD)."
+        },
+        "dartCleanArch.preview.maxItems": {
+          "type": "number",
+          "default": 200,
+          "description": "Número máximo de items a mostrar en la previsualización. Si se excede, se truncará con un mensaje '+N más...'."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
