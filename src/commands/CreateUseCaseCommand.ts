@@ -6,12 +6,10 @@ import * as vscode from 'vscode';
 
 export class CreateUseCaseCommand extends BaseCommand {
     private useCaseGenerator = new UseCaseGenerator();
-    private previewManager: PreviewManager;
+    private previewManager?: PreviewManager;
 
     constructor() {
         super();
-        const outputChannel = vscode.window.createOutputChannel('Dart Clean Architecture');
-        this.previewManager = new PreviewManager(outputChannel);
     }
 
     getId(): string {
@@ -19,6 +17,12 @@ export class CreateUseCaseCommand extends BaseCommand {
     }
 
     async execute(): Promise<void> {
+        // Inicializar PreviewManager si no existe
+        if (!this.previewManager) {
+            const outputChannel = vscode.window.createOutputChannel('Dart Clean Architecture');
+            this.previewManager = new PreviewManager(outputChannel, this.context!);
+        }
+
         // 1. Resolver el directorio de trabajo (incluye soporte para Melos)
         const resolveResult = await this.resolveWorkingDirectoryWithInfo('crear el caso de uso');
         if (!resolveResult) {

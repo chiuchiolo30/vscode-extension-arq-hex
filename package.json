@@ -6,7 +6,7 @@
   "author": {
     "name": "Chiuchiolo Sergio Edgardo"
   },
-  "version": "1.2.0",
+  "version": "1.2.1",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -71,6 +71,10 @@
       {
         "command": "flutter-arq-hex.togglePreview",
         "title": "Clean Architecture: Toggle preview before generation"
+      },
+      {
+        "command": "flutter-arq-hex.showStatusBarMenu",
+        "title": "Clean Architecture: Show configuration menu"
       }
     ],
     "configuration": {

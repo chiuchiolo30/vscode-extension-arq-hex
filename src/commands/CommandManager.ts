@@ -4,6 +4,7 @@ import { CreateFeatureWithCrudCommand } from './CreateFeatureWithCrudCommand';
 import { CreateUseCaseCommand } from './CreateUseCaseCommand';
 import { SetStructureModeCommand } from './SetStructureModeCommand';
 import { TogglePreviewCommand } from './TogglePreviewCommand';
+import { StatusBarManager } from '../helpers/StatusBarManager';
 
 export class CommandManager {
     private commands = [
@@ -11,6 +12,11 @@ export class CommandManager {
         new CreateFeatureWithCrudCommand(),
         new CreateUseCaseCommand()
     ];
+    private statusBarManager?: StatusBarManager;
+
+    constructor(statusBarManager?: StatusBarManager) {
+        this.statusBarManager = statusBarManager;
+    }
 
     registerCommands(context: vscode.ExtensionContext): void {
         // Registrar comandos regulares con context
@@ -18,7 +24,11 @@ export class CommandManager {
             command.setContext(context);
             const disposable = vscode.commands.registerCommand(
                 command.getId(),
-                () => command.execute()
+                async () => {
+                    await command.execute();
+                    // Actualizar Status Bar después de ejecutar comando
+                    this.statusBarManager?.update();
+                }
             );
             context.subscriptions.push(disposable);
         });
@@ -27,7 +37,11 @@ export class CommandManager {
         const setStructureModeCommand = new SetStructureModeCommand(context);
         const setModeDisposable = vscode.commands.registerCommand(
             setStructureModeCommand.getId(),
-            () => setStructureModeCommand.execute()
+            async () => {
+                await setStructureModeCommand.execute();
+                // Actualizar Status Bar después de cambiar modo
+                this.statusBarManager?.update();
+            }
         );
         context.subscriptions.push(setModeDisposable);
 
@@ -36,7 +50,11 @@ export class CommandManager {
         togglePreviewCommand.setContext(context);
         const togglePreviewDisposable = vscode.commands.registerCommand(
             togglePreviewCommand.getId(),
-            () => togglePreviewCommand.execute()
+            async () => {
+                await togglePreviewCommand.execute();
+                // Actualizar Status Bar después de toggle preview
+                this.statusBarManager?.update();
+            }
         );
         context.subscriptions.push(togglePreviewDisposable);
     }

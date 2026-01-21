@@ -10,6 +10,7 @@ export abstract class BaseCommand {
   protected inputValidator = new InputValidator();
   protected melosHelper = new MelosHelper();
   protected structureModeManager?: StructureModeManager;
+  protected context?: vscode.ExtensionContext;
 
   abstract getId(): string;
   abstract execute(): Promise<void>;
@@ -19,6 +20,7 @@ export abstract class BaseCommand {
    * Debe ser llamado desde CommandManager al registrar los comandos
    */
   setContext(context: vscode.ExtensionContext): void {
+    this.context = context;
     this.structureModeManager = new StructureModeManager(context);
   }
 

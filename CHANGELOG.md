@@ -4,6 +4,47 @@ All notable changes to the "flutter-arq-hex" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.2.1] - 2026-01-21
+
+### Added
+- **📊 Status Bar inteligente**: Muestra estado actual de la extensión en tiempo real
+  - En proyecto simple: `DCA: Feature-First | Preview ON`
+  - En monorepo con app activa: `DCA: menu_app | Feature-First | Preview ON`
+  - En monorepo sin app activa: `DCA: Monorepo | Auto | Preview OFF`
+  - Click abre menú Quick Pick con opciones de configuración
+  - Actualización automática al cambiar editor, configuración o ejecutar comandos
+- **🎨 WebviewPanel para Preview**: Reemplaza modal por panel dedicado
+  - Header fijo con metadata del comando (no scrollea)
+  - Body scrolleable con lista de carpetas y archivos
+  - Footer fijo con botones siempre visibles
+  - Soporta listas largas (500+ items) sin ocultar botones
+  - Estilo nativo VS Code (tema claro/oscuro)
+  - Atajos de teclado: Ctrl+Enter (crear), Escape (cancelar)
+
+### Changed
+- **StatusBarManager**: Nueva clase para gestión del Status Bar
+  - Detecta app activa en monorepos basándose en archivo abierto
+  - Muestra modo de estructura específico por app
+  - Tooltip detallado con contexto completo
+- **PreviewWebview**: Implementación del panel dedicado para preview
+  - Seguridad: CSP estricta con nonce, sanitización HTML
+  - Layout: Header y footer fijos, body con overflow-y
+  - Event listeners explícitos en lugar de onclick inline
+- **PreviewManager**: Ahora usa WebviewPanel en lugar de modal
+  - Mejora UX con botones siempre visibles
+  - Secciones separadas para carpetas y archivos
+- **BaseCommand**: Expone context para acceso desde comandos
+- **extension.ts**: Registra listeners para actualización automática del Status Bar
+  - onDidChangeActiveTextEditor
+  - onDidOpenTextDocument
+  - onDidChangeConfiguration
+  - onDidChangeWorkspaceFolders
+
+### Fixed
+- Preview webview: Botones ahora funcionan correctamente con event listeners
+- Status Bar: Se actualiza automáticamente al cambiar de archivo en monorepos
+- Preview: Evita múltiples resoluciones de promesa con flag `resolved`
+
 ## [1.2.0] - 2026-01-14
 
 ### Added

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { PreviewWebview } from './PreviewWebview';
 
 /**
  * Plan de generación que describe qué carpetas y archivos se crearán
@@ -50,9 +51,11 @@ export interface PreviewItem {
  */
 export class PreviewManager {
     private outputChannel: vscode.OutputChannel;
+    private context: vscode.ExtensionContext;
 
-    constructor(outputChannel: vscode.OutputChannel) {
+    constructor(outputChannel: vscode.OutputChannel, context: vscode.ExtensionContext) {
         this.outputChannel = outputChannel;
+        this.context = context;
     }
 
     /**
@@ -96,44 +99,33 @@ export class PreviewManager {
             return true;
         }
 
-        const maxItems = config.get<number>('maxItems', 200);
-        const items = this.buildPreviewItems(plan);
-        
         const totalFolders = plan.foldersToCreate.length;
         const totalFiles = plan.filesToCreate.length;
-        const totalItems = totalFolders + totalFiles;
 
-        // Construir mensaje del preview
-        let message = this.buildPreviewMessage(plan, totalFolders, totalFiles, items, maxItems);
+        // Mostrar WebviewPanel con preview
+        const previewWebview = new PreviewWebview(this.context);
+        const result = await previewWebview.showPreview(plan);
 
-        // Mostrar modal de confirmación con checkbox
-        const action = await vscode.window.showInformationMessage(
-            message,
-            { 
-                modal: true,
-                detail: '💡 Puedes desactivar esta previsualización con el comando "Toggle preview before generation"'
-            },
-            '✅ Crear',
-            '⚡ Crear y no volver a mostrar'
-        );
+        // Procesar resultado
+        switch (result) {
+            case 'create':
+                this.outputChannel.appendLine(`[DCA] Generación confirmada. Creando ${totalFiles} archivos y ${totalFolders} carpetas.`);
+                return true;
 
-        // Si el usuario elige "Crear y no volver a mostrar", deshabilitar el preview
-        if (action === '⚡ Crear y no volver a mostrar') {
-            await config.update('enabled', false, vscode.ConfigurationTarget.Workspace);
-            this.outputChannel.appendLine('[DCA] Preview deshabilitado. Los archivos se generarán directamente en el futuro.');
-            vscode.window.showInformationMessage('⚡ Previsualización deshabilitada. Los archivos se generarán directamente.');
+            case 'create_disable':
+                this.outputChannel.appendLine('[DCA] Preview deshabilitado. Los archivos se generarán directamente en el futuro.');
+                vscode.window.showInformationMessage('⚡ Previsualización deshabilitada. Los archivos se generarán directamente.');
+                this.outputChannel.appendLine(`[DCA] Generación confirmada. Creando ${totalFiles} archivos y ${totalFolders} carpetas.`);
+                return true;
+
+            case 'cancel':
+                this.outputChannel.appendLine('[DCA] Generación cancelada por el usuario. No se realizaron cambios.');
+                vscode.window.showInformationMessage('❌ Generación cancelada. No se realizaron cambios.');
+                return false;
+
+            default:
+                return false;
         }
-
-        const confirmed = action === '✅ Crear' || action === '⚡ Crear y no volver a mostrar';
-
-        if (confirmed) {
-            this.outputChannel.appendLine(`[DCA] Generación confirmada. Creando ${totalFiles} archivos y ${totalFolders} carpetas.`);
-        } else {
-            this.outputChannel.appendLine('[DCA] Generación cancelada por el usuario. No se realizaron cambios.');
-            vscode.window.showInformationMessage('❌ Generación cancelada. No se realizaron cambios.');
-        }
-
-        return confirmed;
     }
 
     /**

@@ -6,12 +6,10 @@ import * as vscode from 'vscode';
 
 export class CreateFeatureCommand extends BaseCommand {
     private featureGenerator = new FeatureStructureGenerator();
-    private previewManager: PreviewManager;
+    private previewManager?: PreviewManager;
 
     constructor() {
         super();
-        const outputChannel = vscode.window.createOutputChannel('Dart Clean Architecture');
-        this.previewManager = new PreviewManager(outputChannel);
     }
 
     getId(): string {
@@ -19,6 +17,12 @@ export class CreateFeatureCommand extends BaseCommand {
     }
 
     async execute(): Promise<void> {
+        // Inicializar PreviewManager si no existe
+        if (!this.previewManager) {
+            const outputChannel = vscode.window.createOutputChannel('Dart Clean Architecture');
+            this.previewManager = new PreviewManager(outputChannel, this.context!);
+        }
+
         // 1. Primero resolver el directorio de trabajo (incluye soporte para Melos)
         const resolveResult = await this.resolveWorkingDirectoryWithInfo('crear la feature');
         console.log('[DEBUG CreateFeatureCommand] Working directory resolved:', resolveResult);
