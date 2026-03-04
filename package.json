@@ -1,6 +1,6 @@
 {
   "name": "dart-clena-architecture-hex",
-  "displayName": "Flutter Clean Architecture Generator",
+  "displayName": "Dart Clean Architecture - Arq. Hex.",
   "publisher": "FlutterCleanArchitecture",
   "extensionDependencies": [
     "Dart-Code.dart-code"
