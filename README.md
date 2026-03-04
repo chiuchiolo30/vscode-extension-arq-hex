@@ -1,5 +1,6 @@
-# Dart Clean Architecture – Hexagonal Architecture for Flutter 🏗️
-
+<a href="https://marketplace.visualstudio.com/items?itemName=FlutterCleanArchitecture.dart-clena-architecture-hex">
+  <img src="https://dart-clean-architecture-banner-v.vercel.app" width="100%">
+</a>
 <p align="left">
   <a href="https://opensource.org/licenses/MIT">
     <img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License">
