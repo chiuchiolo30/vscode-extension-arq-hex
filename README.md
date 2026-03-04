@@ -1,247 +1,293 @@
-# Flutter Clean Architecture 🏗️
+# Dart Clean Architecture – Hexagonal Architecture for Flutter 🏗️
+
 <p align="left">
-    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>    
-    <a href="https://github.com/chiuchiolo30/vscode-extension-arq-hex/actions/workflows/pipeline.yaml"><img src="https://github.com/chiuchiolo30/vscode-extension-arq-hex/actions/workflows/pipeline.yaml/badge.svg" alt="Deployment Pipeline"></a>
-    <a href="https://marketplace.visualstudio.com/items?itemName=FlutterCleanArchitecture.dart-clena-architecture-hex"><img src="https://img.shields.io/visual-studio-marketplace/d/chiuchiolo30.flutter-arq-hex?color=blue&label=downloads" alt="Downloads"></a>
+  <a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License">
+  </a>
+  <a href="https://github.com/chiuchiolo30/vscode-extension-arq-hex/actions/workflows/pipeline.yaml">
+    <img src="https://github.com/chiuchiolo30/vscode-extension-arq-hex/actions/workflows/pipeline.yaml/badge.svg" alt="CI Pipeline">
+  </a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=FlutterCleanArchitecture.dart-clena-architecture-hex">
+    <img src="https://img.shields.io/visual-studio-marketplace/d/FlutterCleanArchitecture.dart-clena-architecture-hex?label=downloads&color=blue" alt="Downloads">
+  </a>
 </p>
 
-![Clean Architecture](screenshots/arq.png)
+Generate a complete **Clean Architecture (Hexagonal Architecture)** structure for **Flutter/Dart projects** automatically.
 
-Genera automáticamente la estructura completa de **Clean Architecture (Arquitectura Hexagonal)** para tus proyectos Flutter/Dart. ¡Ahorra tiempo y mantén tu código organizado desde el primer día!
+⚡ Create features in seconds  
+⚡ Maintain a consistent architecture across your project  
+⚡ Full support for **Melos Monorepos**
 
-✨ **Ahora con soporte completo para Monorepos Melos**
+---
 
+# 🎬 Demo
 
-## ✨ Características Principales
+![Preview](https://raw.githubusercontent.com/chiuchiolo30/vscode-extension-arq-hex/master/assets/preview.gif)
 
-### 🔍 Previsualización Antes de Generar (¡NUEVO!)
-* **Preview completo**: Ve qué carpetas y archivos se crearán antes de confirmar
-* **Resumen detallado**: Estadísticas (cantidad de carpetas/archivos) y contexto (app, modo, feature)
-* **Confirmación segura**: Cancela sin crear nada si algo no se ve bien
-* **Configurable**: Habilita/deshabilita preview según tu preferencia
-* [📖 Ver guía completa del Preview](./PREVIEW_FEATURE_GUIDE.md)
+Generate a full Clean Architecture feature directly from VS Code in seconds.
 
-### 🏗️ Dos Modos de Estructura
-* **Feature-First** (por defecto): Organiza código por funcionalidad - `lib/features/<feature>/domain|data|ui/`
-* **Layer-First**: Organiza código por capas arquitectónicas - `lib/domain|data|ui/<feature>/`
-* **Detección automática**: La extensión detecta el modo usado en tu proyecto
-* **Configuración flexible**: Cambia de modo por proyecto/app con un solo comando
+---
 
-### 🎯 Generación Automática de Estructura
-* **Capas bien definidas**: Data, Domain y Presentation siguiendo Clean Architecture
-* **Exports automáticos**: Genera archivos `index.dart` en cada carpeta
-* **CRUD completo**: Crea operaciones Create, Read, Update y Delete con un comando
-* **Use Cases individuales**: Agrega casos de uso específicos a features existentes
-* **Compatible con ambos modos**: Todos los comandos funcionan en Feature-First y Layer-First
+# 🚀 Why this extension
 
-### 🚀 Soporte para Monorepos Melos
-* **Detección automática**: Identifica proyectos Melos sin configuración
-* **Selector inteligente**: Muestra solo las apps de tu monorepo (filtra packages)
-* **Multi-proyecto**: Trabaja con múltiples apps desde el mismo workspace
-* **Modo independiente**: Cada app puede usar Feature-First o Layer-First
+Implementing Clean Architecture in Flutter usually requires creating a significant amount of boilerplate:
 
-### 💬 Experiencia de Usuario Mejorada
-* **Mensajes amigables**: Notificaciones con íconos y detalles claros
-* **Guías contextuales**: Ejemplos en cada input para ayudarte
-* **Sugerencias útiles**: Tips cuando algo falta o hay un error
+- folders
+- repositories
+- entities
+- use cases
+- datasources
+- models
+- UI structure
 
-## Requerimientos
+This extension automates the entire process, allowing teams to focus on **business logic instead of manual project setup**.
 
-Antes de utilizar esta extensión, asegúrate de tener instalado [Visual Studio Code](https://code.visualstudio.com/) y la extensión [Dart](https://marketplace.visualstudio.com/items?itemName=Dart-Code.dart-code).
+It ensures a **consistent architecture across teams and projects**, reducing setup time and avoiding structural mistakes.
 
-## 📦 Soporte para Monorepos Melos
+---
 
-¿Trabajas con múltiples apps en un mismo repositorio? ¡Esta extensión está diseñada para ti!
+# ✨ Key Features
 
-### Cómo Funciona
+## 🔍 Generation Preview (NEW)
 
-1. **Detección automática**: Al ejecutar cualquier comando, la extensión busca `melos.yaml` en tu proyecto
-2. **Selector visual**: Te muestra una lista elegante con todas tus apps Flutter
-3. **Filtrado inteligente**: Solo muestra apps (carpeta `apps/`), no packages compartidos
-4. **Workflow consistente**: Funciona igual que en proyectos normales, pero con la flexibilidad de elegir la app
+Preview the structure **before files are created**.
 
-### Ejemplo en Melos
+- Full preview of folders and files
+- Generation summary (number of folders and files)
+- Context information (feature name, structure mode)
+- Safe confirmation before generating
+- Option to enable or disable preview
 
-```
-📦 Monorepo Melos - Selección de App
-🎯 Selecciona la app donde crear la feature
+Documentation:  
+[Preview Feature Guide](https://github.com/chiuchiolo30/vscode-extension-arq-hex/blob/master/PREVIEW_FEATURE_GUIDE.md)
 
-📱 main_app         📂 apps/main_app
-📱 admin_app        📂 apps/admin_app  
-📱 customer_app     📂 apps/customer_app
-```
+---
 
-Para más detalles, consulta [MELOS_GUIDE.md](MELOS_GUIDE.md)
+## 🏗️ Two Structure Modes
 
-## 🚀 Instalación
+Supports the two most common Clean Architecture project structures.
 
-1. Abre VS Code
-2. Ve a Extensions (`Ctrl+Shift+X` o `Cmd+Shift+X`)
-3. Busca **"Flutter Clean Architecture"** o **"flutter-arq-hex"**
-4. Haz clic en **Install**
+### Feature-First (default)
 
-## 📖 Uso Rápido
-
-### Comandos Disponibles
-
-Abre la paleta de comandos (`Ctrl+Shift+P` / `Cmd+Shift+P`) y busca:
-
-| Comando | Descripción |
-|---------|-------------|
-| `Clean Architecture: Create Feature` | Crea una feature básica sin CRUD |
-| `Clean Architecture: Create Feature with CRUD` | Crea una feature completa con operaciones CRUD |
-| `Clean Architecture: Create Use Case` | Agrega un caso de uso a una feature existente |
-| `Clean Architecture: Set project structure mode` | Configura el modo Feature-First o Layer-First |
-| `Clean Architecture: Toggle preview before generation` | Habilita o deshabilita la previsualización antes de generar |
-
-### Paso a Paso
-
-1. **Abre tu proyecto Flutter** (normal o monorepo Melos)
-2. **Ejecuta un comando** desde la paleta
-3. **Selecciona la app** (si es monorepo) o confirma el proyecto actual
-4. **Ingresa el nombre** de la feature o use case
-5. **¡Listo!** La estructura se genera automáticamente
-
-## 🏗️ Modos de Estructura: Feature-First vs Layer-First
-
-Esta extensión soporta dos estilos de organización de código Clean Architecture:
-
-### 📦 Feature-First (Modo por defecto)
-
-**Organiza el código por funcionalidad**. Cada feature contiene sus propias capas.
+Organize code by feature.
 
 ```
 lib/
-  features/
-    authentication/
-      domain/
-        entities/
-        repositories/
-        usecases/
-      data/
-        datasources/
-        models/
-        repositories/
-      ui/
-        screens/
-        widgets/
-        blocs/
-    products/
-      domain/
-      data/
-      ui/
+└── features/
+    └── <feature>/
+        ├── domain/
+        ├── data/
+        └── ui/
 ```
 
-**✅ Ventajas:**
-- Ideal para proyectos pequeños y medianos
-- Fácil de navegar: todo lo relacionado está junto
-- Borrar una feature es simple (eliminar una carpeta)
-- Reutilización de código dentro de la feature
+Advantages:
 
-**📝 Cuándo usar:** Proyectos con features relativamente independientes
+- Easy to navigate
+- All feature logic in one place
+- Easy to remove features
+- Ideal for small and medium projects
 
 ---
 
-### 🏗️ Layer-First
+### Layer-First
 
-**Organiza el código por capas arquitectónicas**. Cada capa contiene todas las features.
+Organize code by architectural layers.
 
 ```
 lib/
-  domain/
-    authentication/
-      entities/
-      repositories/
-      usecases/
-    products/
-      entities/
-      repositories/
-      usecases/
-  data/
-    authentication/
-      datasources/
-      models/
-      repositories/
-    products/
-      datasources/
-      models/
-      repositories/
-  ui/
-    authentication/
-      screens/
-      widgets/
-      blocs/
-    products/
-      screens/
-      widgets/
-      blocs/
+├── domain/
+│   └── <feature>/
+├── data/
+│   └── <feature>/
+└── ui/
+    └── <feature>/
 ```
 
-**✅ Ventajas:**
-- Ideal para proyectos grandes y complejos
-- Separación clara de responsabilidades por capa
-- Facilita la reutilización entre features de la misma capa
-- Mejor para equipos especializados por capa
+Advantages:
 
-**📝 Cuándo usar:** Proyectos empresariales con múltiples features interconectadas
+- Clear separation of layers
+- Better for large projects
+- Easier reuse across features
+- Suitable for larger teams
 
 ---
 
-### ⚙️ Cómo Funciona la Detección Automática
+### Automatic Detection
 
-Por defecto, la extensión detecta automáticamente el modo usado en tu proyecto:
+The extension automatically detects your project structure:
 
-1. **Detecta Feature-First** si existe `lib/features/`
-2. **Detecta Layer-First** si existe `lib/domain/`, `lib/data/` o `lib/ui/`
-3. **Usa Feature-First por defecto** si es un proyecto nuevo (solo `lib/`)
-4. **Pregunta al usuario** si detecta ambos estilos (ambiguo)
+1. Detects **Feature-First** if `lib/features/` exists
+2. Detects **Layer-First** if `lib/domain`, `lib/data` or `lib/ui` exist
+3. Defaults to **Feature-First** in new projects
+4. Prompts the user if both styles are detected
 
-### 🔧 Configurar el Modo Manualmente
-
-Puedes forzar el modo para un proyecto/app específico:
-
-1. Abre la paleta de comandos (`Ctrl+Shift+P` / `Cmd+Shift+P`)
-2. Busca: `Dart Clean Architecture: Set project structure mode`
-3. Selecciona tu opción:
-   - **Feature-First**: Organizar por funcionalidad
-   - **Layer-First**: Organizar por capas
-   - **Auto**: Detectar automáticamente (limpia configuración manual)
-
-**💡 En monorepos Melos**: La configuración se guarda por app, así cada una puede usar su propio modo.
-
-### ⚙️ Configuración Avanzada (settings.json)
-
-```json
-{
-  // Modo por defecto (si no se puede detectar)
-  "dartCleanArch.structure.mode": "featureFirst",  // "featureFirst" | "layerFirst"
-  
-  // Habilitar detección automática
-  "dartCleanArch.structure.autoDetect": true,
-  
-  // Preguntar cuando se detectan ambos estilos
-  "dartCleanArch.structure.promptOnAmbiguous": true
-}
-```
-
-**Prioridad de decisión:**
-1. Configuración manual (comando "Set project structure mode")
-2. Detección automática (si `autoDetect` = true)
-3. Valor por defecto en settings (`mode`)
+You can also manually configure the structure mode.
 
 ---
-## Crear una nueva carateristica sin el CRUD
-![sin crud](screenshots/sin_crud.gif)
 
-## Crear una nueva carateristica con el CRUD
-![con crud](screenshots/con-crud.gif)
+## ⚡ Automatic Architecture Generation
 
-## Crear un caso de uso dentro de una feature
-![new feature](screenshots/new-feature.gif)
+Generate complete architecture structures instantly.
 
-¡Listo! La estructura de carpetas y archivos para la arquitectura limpia ha sido generada. Puedes empezar a implementar tus clases y métodos.
+Includes:
 
-# Licencia
-Esta extensión está bajo la licencia [MIT](https://opensource.org/licenses/MIT).
+- Domain layer
+- Data layer
+- UI layer
+- Entities
+- Repositories
+- Use cases
+- Datasources
+- Models
+- Bloc structure
+- Screens
+- Widgets
+- Automatic `index.dart` exports
 
-**Enjoy!**
+---
+
+## 🧩 CRUD Feature Generation
+
+Generate full CRUD features automatically.
+
+Includes:
+
+- Create
+- Read
+- Update
+- Delete
+
+All following Clean Architecture principles.
+
+---
+
+## 🚀 Melos Monorepo Support
+
+Full support for **Flutter monorepos using Melos**.
+
+Features:
+
+- Automatic detection of Melos projects
+- Intelligent app selector
+- Filters only valid Flutter apps
+- Each app can have its own structure mode
+- Works seamlessly inside large monorepos
+
+Documentation:  
+[Melos Guide](https://github.com/chiuchiolo30/vscode-extension-arq-hex/blob/master/MELOS_GUIDE.md)
+
+---
+
+# 📦 Installation
+
+1. Open **Visual Studio Code**
+2. Go to **Extensions** (`Ctrl + Shift + X`)
+3. Search for: `Dart Clean Architecture - Arq. Hex`
+4. Click **Install**
+
+Marketplace page:
+
+https://marketplace.visualstudio.com/items?itemName=FlutterCleanArchitecture.dart-clena-architecture-hex
+
+---
+
+# 📖 Quick Usage
+
+Open the command palette: `Ctrl + Shift + P`
+
+Available commands:
+
+| Command | Description |
+|--------|-------------|
+| Clean Architecture: Create Feature | Create a basic feature |
+| Clean Architecture: Create Feature with CRUD | Generate a complete CRUD feature |
+| Clean Architecture: Create Use Case | Add a use case to an existing feature |
+| Clean Architecture: Set project structure mode | Switch between Feature-First or Layer-First |
+| Clean Architecture: Toggle preview before generation | Enable or disable preview |
+
+---
+
+# 🧠 Example Workflow
+
+1. Open the command palette
+`Ctrl + Shift + P`
+
+2. Run: `Create Feature with CRUD`
+
+3. Enter the feature name.
+
+4. Review the preview.
+
+5. Confirm generation.
+
+The extension generates the complete architecture automatically.
+
+---
+
+# 📂 Example Generated Structure
+
+```
+lib/
+└── features/
+    └── notifications/
+        ├── domain/
+        │   ├── entities/
+        │   ├── repositories/
+        │   └── usecases/
+        ├── data/
+        │   ├── datasources/
+        │   ├── models/
+        │   └── repositories/
+        └── ui/
+            ├── blocs/
+            ├── screens/
+            └── widgets/
+```
+
+
+---
+
+# 🎥 Examples
+
+## Create Feature
+
+![Create Feature](https://raw.githubusercontent.com/chiuchiolo30/vscode-extension-arq-hex/master/assets/preview-3.gif)
+
+---
+
+
+## Create Use Case
+
+![Create Use Case](https://raw.githubusercontent.com/chiuchiolo30/vscode-extension-arq-hex/master/assets/preview-2.gif)
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+If you have suggestions, improvements, or bug reports, feel free to open an issue or submit a pull request.
+
+Repository:
+
+https://github.com/chiuchiolo30/vscode-extension-arq-hex
+
+---
+
+# ⭐ Support the project
+
+If this extension helps you, consider:
+
+- Leaving a **review on the VS Code Marketplace**
+- Giving the repository a **GitHub star**
+- Sharing it with your team
+
+Your feedback helps improve the project and support future development.
+
+---
+
+# 📄 License
+
+This project is licensed under the **MIT License**.
+
+https://opensource.org/licenses/MIT

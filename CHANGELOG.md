@@ -4,6 +4,31 @@ All notable changes to the "flutter-arq-hex" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.3.0] - 2026-03-03
+
+### Changed
+- **🎨 Rebranding**: Display name actualizado a "Flutter Clean Architecture Generator"
+- **📝 README.md**: Reescritura completa con formato profesional
+  - Badges (licencia, CI, descargas)
+  - GIF de demo al inicio
+  - Árboles de directorios con formato visual
+  - Tabla de comandos
+  - Workflow paso a paso
+  - Sección de contribución y soporte
+- **🔍 SEO & Marketplace**: Mejoras para mayor visibilidad
+  - Descripción en inglés optimizada para búsquedas
+  - Keywords ampliadas y enfocadas en Flutter
+  - Categoría actualizada a "Snippets"
+  - Gallery banner color actualizado (#02569B - Flutter blue)
+  - Badge de Flutter Clean Architecture
+- **📦 package.json**: Mejoras de metadata
+  - `extensionDependencies`: Requiere Dart extension
+  - `capabilities`: virtualWorkspaces y untrustedWorkspaces
+  - Formato de código mejorado
+- **🖼️ Assets**: Agregado preview.gif para demo en README
+
+---
+
 ## [1.2.1] - 2026-01-21
 
 ### Added

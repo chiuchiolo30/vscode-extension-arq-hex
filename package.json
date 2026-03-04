@@ -1,23 +1,39 @@
 {
   "name": "dart-clena-architecture-hex",
-  "displayName": "Dart Clean Architecture - Arq. Hex.",
+  "displayName": "Flutter Clean Architecture Generator",
   "publisher": "FlutterCleanArchitecture",
-  "description": "🏗️ Genera automáticamente Clean Architecture para Flutter/Dart. Soporte completo para Monorepos Melos. Ahorra tiempo con estructura organizada desde el día 1.",
+  "extensionDependencies": [
+    "Dart-Code.dart-code"
+  ],
+  "badges": [
+    {
+      "url": "https://img.shields.io/badge/flutter-clean_architecture-blue",
+      "href": "https://github.com/chiuchiolo30/vscode-extension-arq-hex",
+      "description": "Flutter Clean Architecture"
+    }
+  ],
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "description": "Generate Clean Architecture structure for Flutter and Dart projects. Supports Feature-First and Layer-First architecture, CRUD scaffolding, Use Case generation and Melos monorepos.",
   "author": {
     "name": "Chiuchiolo Sergio Edgardo"
   },
-  "version": "1.2.1",
+  "version": "1.3.0",
   "engines": {
     "vscode": "^1.77.0"
   },
   "categories": [
     "Programming Languages",
-    "Extension Packs",
+    "Snippets",
     "Other"
   ],
   "icon": "images/logo-vs.png",
   "galleryBanner": {
-    "color": "#C80000",
+    "color": "#02569B",
     "theme": "dark"
   },
   "bugs": {
@@ -26,25 +42,28 @@
   },
   "homepage": "https://github.com/chiuchiolo30/vscode-extension-arq-hex/blob/master/README.md",
   "repository": {
-      "type": "git",
-      "url": "https://github.com/chiuchiolo30/vscode-extension-arq-hex"
+    "type": "git",
+    "url": "https://github.com/chiuchiolo30/vscode-extension-arq-hex"
   },
   "license": "MIT",
   "keywords": [
     "flutter",
     "dart",
+    "flutter architecture",
     "clean architecture",
     "hexagonal architecture",
+    "flutter clean architecture",
+    "flutter generator",
+    "flutter scaffold",
+    "flutter feature generator",
     "melos",
+    "melos monorepo",
     "monorepo",
-    "architecture",
-    "code generator",
-    "boilerplate",
-    "scaffold",
-    "domain driven design",
     "ddd",
+    "domain driven design",
+    "repository pattern",
     "use case",
-    "repository pattern"
+    "architecture"
   ],
   "activationEvents": [
     "onLanguage:dart"
@@ -82,7 +101,10 @@
       "properties": {
         "dartCleanArch.structure.mode": {
           "type": "string",
-          "enum": ["featureFirst", "layerFirst"],
+          "enum": [
+            "featureFirst",
+            "layerFirst"
+          ],
           "default": "featureFirst",
           "enumDescriptions": [
             "Feature-First: lib/features/<feature>/domain|data|ui/...",
