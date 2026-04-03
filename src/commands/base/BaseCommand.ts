@@ -30,37 +30,37 @@ export abstract class BaseCommand {
    * @returns La ruta del proyecto donde se ejecutará el comando, o null si se cancela
    */
   protected async resolveWorkingDirectory(context: string = 'trabajar'): Promise<string | null> {
-    const currentDir = WorkspaceHelper.getCurrentDirectory();
-    
-    console.log('[DEBUG resolveWorkingDirectory] Current directory:', currentDir);
-    
-    if (!currentDir) {
+    const workspaceDir = WorkspaceHelper.getCurrentDirectory();
+    const activeFileDir = WorkspaceHelper.getActiveFileDirectory();
+    const lookupDir = activeFileDir ?? workspaceDir;
+
+    if (!workspaceDir || !lookupDir) {
       this.showError('Error: No se pudo encontrar el directorio del proyecto');
       return null;
     }
 
     // Verificar si estamos en un monorepo Melos
-    const melosRoot = this.projectValidator.findMelosRoot(currentDir);
-    
-    console.log('[DEBUG resolveWorkingDirectory] Melos root found:', melosRoot);
-    
+    const melosRoot = this.projectValidator.findMelosRoot(lookupDir);
+
     if (melosRoot) {
-      // Detectamos un monorepo Melos
-      const selectedDir = await this.handleMelosWorkspace(melosRoot, currentDir, context);
-      console.log('[DEBUG resolveWorkingDirectory] Selected directory from Melos:', selectedDir);
-      return selectedDir;
+      const activeAppPath = activeFileDir
+        ? this.projectValidator.findContainingApp(activeFileDir, melosRoot)
+        : null;
+
+      if (activeAppPath) {
+        return activeAppPath;
+      }
+
+      return this.handleMelosWorkspace(melosRoot, workspaceDir, context);
     }
 
-    console.log('[DEBUG resolveWorkingDirectory] Not a Melos project, checking Flutter...');
-
     // No es Melos, verificar que sea un proyecto Flutter válido
-    if (!this.projectValidator.isFlutterProject(currentDir)) {
+    if (!this.projectValidator.isFlutterProject(workspaceDir)) {
       this.showError('❌ No se encontró pubspec.yaml. Asegúrate de estar en la raíz de tu proyecto Flutter.');
       return null;
     }
 
-    console.log('[DEBUG resolveWorkingDirectory] Returning currentDir:', currentDir);
-    return currentDir;
+    return workspaceDir;
   }
 
   /**
@@ -109,22 +109,41 @@ export abstract class BaseCommand {
   }
 
   /**
-   * Resuelve el directorio de trabajo y retorna información adicional (nombre de app)
-   * Útil para preview y logging
+   * Resuelve el directorio de trabajo y retorna información adicional (nombre de app).
+   *
+   * @param context      Mensaje contextual para el selector
+   * @param appsOnly     When true (default), only shows packages in `apps/` for monorepos.
+   *                     Pass false to show all packages (e.g. for informational commands).
    */
-  protected async resolveWorkingDirectoryWithInfo(context: string = 'trabajar'): Promise<{ workingDir: string, appName?: string } | null> {
-    const currentDir = WorkspaceHelper.getCurrentDirectory();
-    
-    if (!currentDir) {
+  protected async resolveWorkingDirectoryWithInfo(
+    context: string = 'trabajar',
+    appsOnly: boolean = true,
+  ): Promise<{ workingDir: string, appName?: string } | null> {
+    const workspaceDir = WorkspaceHelper.getCurrentDirectory();
+    const activeFileDir = WorkspaceHelper.getActiveFileDirectory();
+    const lookupDir = activeFileDir ?? workspaceDir;
+
+    if (!workspaceDir || !lookupDir) {
       this.showError('Error: No se pudo encontrar el directorio del proyecto');
       return null;
     }
 
-    const melosRoot = this.projectValidator.findMelosRoot(currentDir);
-    
+    const melosRoot = this.projectValidator.findMelosRoot(lookupDir);
+
     if (melosRoot) {
-      const packages = this.melosHelper.getMelosPackages(melosRoot);
-      
+      const activeAppPath = activeFileDir
+        ? this.projectValidator.findContainingApp(activeFileDir, melosRoot)
+        : null;
+
+      if (activeAppPath) {
+        return {
+          workingDir: activeAppPath,
+          appName: this.projectValidator.getProjectName(activeAppPath) ?? undefined,
+        };
+      }
+
+      const packages = this.melosHelper.getMelosPackages(melosRoot, appsOnly);
+
       if (packages.length === 0) {
         this.showError('No se encontraron paquetes Flutter en el monorepo de Melos');
         return null;
@@ -132,7 +151,7 @@ export abstract class BaseCommand {
 
       const placeholder = `Selecciona la app donde ${context}`;
       const selectedPackage = await this.melosHelper.showPackageSelector(packages, placeholder);
-      
+
       if (!selectedPackage) {
         return null;
       }
@@ -144,16 +163,16 @@ export abstract class BaseCommand {
 
       return {
         workingDir: selectedPackage.path,
-        appName: selectedPackage.name
+        appName: selectedPackage.name,
       };
     }
 
-    if (!this.projectValidator.isFlutterProject(currentDir)) {
+    if (!this.projectValidator.isFlutterProject(workspaceDir)) {
       this.showError('❌ No se encontró pubspec.yaml. Asegúrate de estar en la raíz de tu proyecto Flutter.');
       return null;
     }
 
-    return { workingDir: currentDir };
+    return { workingDir: workspaceDir };
   }
 
   protected async showInputBox(prompt: string): Promise<string | undefined> {

@@ -4,6 +4,8 @@ import { CreateFeatureWithCrudCommand } from './CreateFeatureWithCrudCommand';
 import { CreateUseCaseCommand } from './CreateUseCaseCommand';
 import { SetStructureModeCommand } from './SetStructureModeCommand';
 import { TogglePreviewCommand } from './TogglePreviewCommand';
+import { ShowArchitectureInfoCommand } from './ShowArchitectureInfoCommand';
+import { GenerateInstructionsCommand } from './GenerateInstructionsCommand';
 import { StatusBarManager } from '../helpers/StatusBarManager';
 
 export class CommandManager {
@@ -13,9 +15,11 @@ export class CommandManager {
         new CreateUseCaseCommand()
     ];
     private statusBarManager?: StatusBarManager;
+    private outputChannel?: vscode.OutputChannel;
 
-    constructor(statusBarManager?: StatusBarManager) {
+    constructor(statusBarManager?: StatusBarManager, outputChannel?: vscode.OutputChannel) {
         this.statusBarManager = statusBarManager;
+        this.outputChannel = outputChannel;
     }
 
     registerCommands(context: vscode.ExtensionContext): void {
@@ -57,5 +61,25 @@ export class CommandManager {
             }
         );
         context.subscriptions.push(togglePreviewDisposable);
+
+        // Registrar comando "Show Architecture Info"
+        const showInfoChannel = this.outputChannel
+            ?? vscode.window.createOutputChannel('Dart Clean Architecture');
+        const showInfoCommand = new ShowArchitectureInfoCommand(showInfoChannel);
+        showInfoCommand.setContext(context);
+        const showInfoDisposable = vscode.commands.registerCommand(
+            showInfoCommand.getId(),
+            async () => showInfoCommand.execute()
+        );
+        context.subscriptions.push(showInfoDisposable);
+
+        // Registrar comando "Generate AI Instructions"
+        const generateInstructionsCommand = new GenerateInstructionsCommand();
+        generateInstructionsCommand.setContext(context);
+        const generateInstructionsDisposable = vscode.commands.registerCommand(
+            generateInstructionsCommand.getId(),
+            async () => generateInstructionsCommand.execute()
+        );
+        context.subscriptions.push(generateInstructionsDisposable);
     }
 }

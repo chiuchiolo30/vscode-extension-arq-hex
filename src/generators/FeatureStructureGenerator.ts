@@ -2,9 +2,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { StringTransformer } from '../utils/StringTransformer';
 import { FileSystemHelper } from '../helpers/FileSystemHelper';
-import { TemplateGenerator } from './TemplateGenerator';
+import { TemplateGenerator, EntityConfig } from './TemplateGenerator';
 import { StructureMode } from '../helpers/StructureModeManager';
 import { GenerationPlan } from '../helpers/PreviewManager';
+
+export { EntityConfig } from './TemplateGenerator';
 
 export interface BasePaths {
     featureRoot?: string;  // Solo para Feature-First
@@ -31,7 +33,7 @@ export class FeatureStructureGenerator {
         await this.createFeatureStructure(rootPath, transformedFeatureName, projectName, false, mode);
     }
 
-    async createFeatureWithCrud(rootPath: string, featureName: string, projectName: string, mode: StructureMode = 'featureFirst'): Promise<void> {
+    async createFeatureWithCrud(rootPath: string, featureName: string, projectName: string, mode: StructureMode = 'featureFirst', entityConfig?: EntityConfig): Promise<void> {
         const transformedFeatureName = StringTransformer.transformInput(featureName);
         
         // Verificar si ya existe la feature (según el modo)
@@ -42,7 +44,7 @@ export class FeatureStructureGenerator {
         // Crear estructura base según el modo
         this.ensureBaseFolders(rootPath, mode);
 
-        await this.createFeatureStructure(rootPath, transformedFeatureName, projectName, true, mode);
+        await this.createFeatureStructure(rootPath, transformedFeatureName, projectName, !!entityConfig, mode, entityConfig);
     }
 
     /**
@@ -99,19 +101,19 @@ export class FeatureStructureGenerator {
         }
     }
 
-    private async createFeatureStructure(rootPath: string, featureName: string, projectName: string, withCrud: boolean, mode: StructureMode): Promise<void> {
+    private async createFeatureStructure(rootPath: string, featureName: string, projectName: string, withCrud: boolean, mode: StructureMode, entityConfig?: EntityConfig): Promise<void> {
         const libPath = path.join(rootPath, 'lib');
         const basePaths = this.getBasePaths(libPath, featureName, mode);
 
         // Crear estructura de directorios
-        this.createDirectoryStructure(basePaths);
+        this.createDirectoryStructure(basePaths, withCrud);
 
-        // Crear archivos index vacíos
-        this.createIndexFiles(basePaths, featureName, projectName);
+        // Crear archivos index y scaffolding base
+        this.createIndexFiles(basePaths, featureName, projectName, withCrud);
 
-        // Si es con CRUD, generar archivos adicionales
-        if (withCrud) {
-            await this.createCrudFiles(basePaths, featureName, projectName);
+        // Si es con CRUD y hay entityConfig, generar archivos adicionales
+        if (withCrud && entityConfig) {
+            await this.createCrudFiles(basePaths, featureName, projectName, entityConfig);
         }
 
         // Crear index principal de la feature (solo en Feature-First)
@@ -120,14 +122,10 @@ export class FeatureStructureGenerator {
         }
     }
 
-    private createDirectoryStructure(basePaths: BasePaths): void {
+    private createDirectoryStructure(basePaths: BasePaths, withCrud: boolean): void {
         const directories = [
-            path.join(basePaths.dataBase, 'datasources/api'),
-            path.join(basePaths.dataBase, 'datasources/local'),
-            path.join(basePaths.dataBase, 'datasources/remote'),
             path.join(basePaths.dataBase, 'models'),
             path.join(basePaths.dataBase, 'repositories'),
-            path.join(basePaths.domainBase, 'entities'),
             path.join(basePaths.domainBase, 'usecases'),
             path.join(basePaths.domainBase, 'repositories'),
             path.join(basePaths.uiBase, 'blocs'),
@@ -135,43 +133,56 @@ export class FeatureStructureGenerator {
             path.join(basePaths.uiBase, 'widgets')
         ];
 
+        if (withCrud) {
+            directories.push(
+                path.join(basePaths.domainBase, 'entities')
+            );
+        }
+
         directories.forEach(dir => {
             this.fileSystemHelper.ensureDirectoryExists(dir);
         });
     }
 
-    private createIndexFiles(basePaths: BasePaths, featureName: string, projectName: string): void {
-        const indexFiles = [
-            path.join(basePaths.dataBase, 'datasources/index.dart'),
+    private createIndexFiles(basePaths: BasePaths, featureName: string, projectName: string, withCrud: boolean): void {
+        const emptyBarrels = [
             path.join(basePaths.dataBase, 'models/index.dart'),
-            path.join(basePaths.domainBase, 'entities/index.dart'),
             path.join(basePaths.domainBase, 'usecases/index.dart'),
             path.join(basePaths.uiBase, 'blocs/index.dart'),
             path.join(basePaths.uiBase, 'screens/index.dart'),
-            path.join(basePaths.uiBase, 'widgets/index.dart')
+            path.join(basePaths.uiBase, 'widgets/index.dart'),
         ];
 
-        indexFiles.forEach(file => {
-            fs.writeFileSync(file, '');
-        });
+        if (withCrud) {
+            emptyBarrels.push(
+                path.join(basePaths.domainBase, 'entities/index.dart'),
+            );
+        }
 
-        // Crear archivos de repositorio vacíos
-        fs.writeFileSync(
-            path.join(basePaths.dataBase, `repositories/${featureName}.repository_impl.dart`),
-            ''
-        );
+        emptyBarrels.forEach(file => fs.writeFileSync(file, ''));
+
+        const className = StringTransformer.transformOutput(featureName);
+
+        // Blank repository skeletons — the fundamental Clean Architecture contracts.
+        // CRUD features overwrite these with fully-typed CRUD signatures.
+        const blankRepoContent = this.templateGenerator.generateBlankRepositoryContent(className, featureName);
         fs.writeFileSync(
             path.join(basePaths.domainBase, `repositories/${featureName}.repository.dart`),
-            ''
+            blankRepoContent
         );
 
-        // Crear archivos index principales de cada capa
-        this.createLayerIndexFiles(basePaths, featureName, projectName);
+        const blankRepoImplContent = this.templateGenerator.generateBlankRepositoryImplContent(className, featureName, projectName);
+        fs.writeFileSync(
+            path.join(basePaths.dataBase, `repositories/${featureName}.repository_impl.dart`),
+            blankRepoImplContent
+        );
+
+        this.createLayerIndexFiles(basePaths, featureName, projectName, withCrud);
     }
 
-    private createLayerIndexFiles(basePaths: BasePaths, featureName: string, projectName: string): void {
+    private createLayerIndexFiles(basePaths: BasePaths, featureName: string, projectName: string, withCrud: boolean): void {
         const dataIndex = this.templateGenerator.generateDataIndexContent(featureName, projectName);
-        const domainIndex = this.templateGenerator.generateDomainIndexContent(featureName, projectName);
+        const domainIndex = this.templateGenerator.generateDomainIndexContent(featureName, projectName, withCrud);
         const uiIndex = this.templateGenerator.generateUiIndexContent(featureName, projectName);
 
         fs.writeFileSync(path.join(basePaths.dataBase, 'index.dart'), dataIndex);
@@ -179,33 +190,43 @@ export class FeatureStructureGenerator {
         fs.writeFileSync(path.join(basePaths.uiBase, 'index.dart'), uiIndex);
     }
 
-    private async createCrudFiles(basePaths: BasePaths, featureName: string, projectName: string): Promise<void> {
+    private async createCrudFiles(basePaths: BasePaths, featureName: string, projectName: string, entityConfig: EntityConfig): Promise<void> {
         const className = StringTransformer.transformOutput(featureName);
+        const entityFileName = StringTransformer.transformInput(entityConfig.entityName);
 
-        // Crear repository abstracto
-        const repositoryContent = this.templateGenerator.generateRepositoryContent(className);
+        // Entity class with real fields from entityConfig
+        const entityContent = this.templateGenerator.generateEntityContent(entityConfig);
+        fs.writeFileSync(
+            path.join(basePaths.domainBase, `entities/${entityFileName}.entity.dart`),
+            entityContent
+        );
+        const entitiesIndex = this.templateGenerator.generateEntitiesIndexContentForEntity(featureName, projectName, entityFileName);
+        fs.writeFileSync(path.join(basePaths.domainBase, 'entities/index.dart'), entitiesIndex);
+
+        // CRUD repository abstract (replaces the blank skeleton written by createIndexFiles)
+        const repositoryContent = this.templateGenerator.generateRepositoryContent(className, featureName, projectName, entityConfig);
         fs.writeFileSync(
             path.join(basePaths.domainBase, `repositories/${featureName}.repository.dart`),
             repositoryContent
         );
 
-        // Crear implementación del repository
-        const repositoryImplContent = this.templateGenerator.generateRepositoryImplContent(className, featureName, projectName);
+        // CRUD repository implementation (replaces the blank skeleton — no datasource)
+        const repositoryImplContent = this.templateGenerator.generateRepositoryImplContent(className, featureName, projectName, entityConfig);
         fs.writeFileSync(
             path.join(basePaths.dataBase, `repositories/${featureName}.repository_impl.dart`),
             repositoryImplContent
         );
 
-        // Crear casos de uso CRUD
-        await this.createCrudUseCases(basePaths, featureName, projectName, className);
+        // Use cases
+        await this.createCrudUseCases(basePaths, featureName, projectName, className, entityConfig);
     }
 
-    private async createCrudUseCases(basePaths: BasePaths, featureName: string, projectName: string, className: string): Promise<void> {
+    private async createCrudUseCases(basePaths: BasePaths, featureName: string, projectName: string, className: string, entityConfig: EntityConfig): Promise<void> {
         const useCases = ['create', 'read', 'update', 'delete'];
         const useCaseFiles: string[] = [];
 
         for (const useCase of useCases) {
-            const useCaseContent = this.templateGenerator.generateUseCaseContent(useCase, className, featureName, projectName);
+            const useCaseContent = this.templateGenerator.generateCrudUseCaseContent(useCase, className, featureName, projectName, entityConfig);
             const fileName = `${useCase}_${featureName}.usecase.dart`;
             
             fs.writeFileSync(
@@ -240,18 +261,22 @@ export class FeatureStructureGenerator {
         withCrud: boolean,
         mode: StructureMode,
         appName?: string,
-        modeSource?: 'auto-detect' | 'override' | 'default'
+        modeSource?: 'auto-detect' | 'override' | 'default',
+        entityConfig?: EntityConfig
     ): GenerationPlan {
         const transformedFeatureName = StringTransformer.transformInput(featureName);
         const libPath = path.join(rootPath, 'lib');
         const basePaths = this.getBasePaths(libPath, transformedFeatureName, mode);
+
+        // withCrud is only effective if entityConfig was provided
+        const effectiveCrud = withCrud && !!entityConfig;
 
         const plan: GenerationPlan = {
             appName,
             appRootPath: rootPath,
             structureMode: mode,
             modeSource,
-            commandName: withCrud ? 'Create Feature with CRUD' : 'Create Feature',
+            commandName: effectiveCrud ? 'Create Feature with CRUD' : 'Create Feature',
             featureName: transformedFeatureName,
             foldersToCreate: [],
             filesToCreate: []
@@ -270,12 +295,8 @@ export class FeatureStructureGenerator {
 
         // Estructura de directorios
         const directories = [
-            path.join(basePaths.dataBase, 'datasources/api'),
-            path.join(basePaths.dataBase, 'datasources/local'),
-            path.join(basePaths.dataBase, 'datasources/remote'),
             path.join(basePaths.dataBase, 'models'),
             path.join(basePaths.dataBase, 'repositories'),
-            path.join(basePaths.domainBase, 'entities'),
             path.join(basePaths.domainBase, 'usecases'),
             path.join(basePaths.domainBase, 'repositories'),
             path.join(basePaths.uiBase, 'blocs'),
@@ -283,33 +304,43 @@ export class FeatureStructureGenerator {
             path.join(basePaths.uiBase, 'widgets')
         ];
 
+        if (effectiveCrud) {
+            directories.push(
+                path.join(basePaths.domainBase, 'entities')
+            );
+        }
+
         plan.foldersToCreate.push(...directories);
 
-        // Archivos index
-        const indexFiles = [
-            path.join(basePaths.dataBase, 'datasources/index.dart'),
+        // Files that will be created
+        const baseFiles = [
             path.join(basePaths.dataBase, 'models/index.dart'),
-            path.join(basePaths.domainBase, 'entities/index.dart'),
             path.join(basePaths.domainBase, 'usecases/index.dart'),
             path.join(basePaths.uiBase, 'blocs/index.dart'),
             path.join(basePaths.uiBase, 'screens/index.dart'),
             path.join(basePaths.uiBase, 'widgets/index.dart'),
-            path.join(basePaths.dataBase, `repositories/${transformedFeatureName}.repository_impl.dart`),
-            path.join(basePaths.domainBase, `repositories/${transformedFeatureName}.repository.dart`),
             path.join(basePaths.dataBase, 'index.dart'),
             path.join(basePaths.domainBase, 'index.dart'),
-            path.join(basePaths.uiBase, 'index.dart')
+            path.join(basePaths.uiBase, 'index.dart'),
+            path.join(basePaths.dataBase, `repositories/${transformedFeatureName}.repository_impl.dart`),
+            path.join(basePaths.domainBase, `repositories/${transformedFeatureName}.repository.dart`),
         ];
 
-        plan.filesToCreate.push(...indexFiles.map(p => ({ path: p })));
+        plan.filesToCreate.push(...baseFiles.map(p => ({ path: p })));
 
         // Index principal (solo Feature-First)
         if (mode === 'featureFirst') {
             plan.filesToCreate.push({ path: path.join(basePaths.featureRoot!, 'index.dart') });
         }
 
-        // Archivos CRUD si aplica
-        if (withCrud) {
+        // CRUD-only artifacts: entity and use cases (NO datasource)
+        if (effectiveCrud) {
+            const entityFileName = StringTransformer.transformInput(entityConfig!.entityName);
+            plan.filesToCreate.push(
+                { path: path.join(basePaths.domainBase, 'entities/index.dart') },
+                { path: path.join(basePaths.domainBase, `entities/${entityFileName}.entity.dart`) },
+            );
+
             const useCases = ['create', 'read', 'update', 'delete'];
             useCases.forEach(useCase => {
                 const fileName = `${useCase}_${transformedFeatureName}.usecase.dart`;

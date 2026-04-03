@@ -38,37 +38,30 @@ export class ProjectValidator {
    * Busca melos.yaml o melos en dev_dependencies del pubspec.yaml
    */
   findMelosRoot(startPath: string): string | null {
-    console.log('[DEBUG ProjectValidator] Finding Melos root from:', startPath);
     let currentPath = startPath;
-    const maxDepth = 10; // Evitar bucles infinitos
+    const maxDepth = 10;
     let depth = 0;
 
     while (depth < maxDepth) {
-      // Verificar si existe melos.yaml (Melos < 7.x)
       const melosYamlPath = path.join(currentPath, 'melos.yaml');
       if (fs.existsSync(melosYamlPath)) {
-        console.log('[DEBUG ProjectValidator] ✅ Found Melos root (melos.yaml) at:', currentPath);
         return currentPath;
       }
 
-      // Verificar si pubspec.yaml tiene melos en dev_dependencies (Melos >= 7.x)
       const pubspecPath = path.join(currentPath, 'pubspec.yaml');
       if (fs.existsSync(pubspecPath)) {
         try {
           const pubspecContent = fs.readFileSync(pubspecPath, 'utf8');
-          // Buscar melos en dev_dependencies
           if (/dev_dependencies:[\s\S]*?\n\s+melos:/m.test(pubspecContent)) {
-            console.log('[DEBUG ProjectValidator] ✅ Found Melos root (dev_dependencies) at:', currentPath);
             return currentPath;
           }
-        } catch (error) {
-          console.log('[DEBUG ProjectValidator] Error reading pubspec.yaml:', error);
+        } catch {
+          // ignore read errors and continue traversal
         }
       }
 
       const parentPath = path.dirname(currentPath);
       if (parentPath === currentPath) {
-        console.log('[DEBUG ProjectValidator] ❌ Reached system root, no Melos config found');
         break;
       }
 
@@ -76,7 +69,6 @@ export class ProjectValidator {
       depth++;
     }
 
-    console.log('[DEBUG ProjectValidator] ❌ No Melos root found');
     return null;
   }
 
@@ -97,8 +89,8 @@ export class ProjectValidator {
       if (match && match[1]) {
         return parseInt(match[1], 10);
       }
-    } catch (error) {
-      console.log('[DEBUG ProjectValidator] Error reading Melos version:', error);
+    } catch {
+      // ignore version detection errors
     }
 
     return null;
@@ -117,6 +109,37 @@ export class ProjectValidator {
     return currentPath !== melosRoot && this.isFlutterProject(currentPath);
   }
 
+  /**
+   * Encuentra la app contenedora cuando el archivo activo está dentro de apps/<app_name>/...
+   * Retorna null si la ruta pertenece al root del monorepo o a un package compartido.
+   */
+  findContainingApp(currentPath: string, melosRoot: string): string | null {
+    let lookupPath = path.resolve(currentPath);
+    const normalizedMelosRoot = path.resolve(melosRoot);
+
+    while (lookupPath.startsWith(normalizedMelosRoot)) {
+      const pubspecPath = path.join(lookupPath, 'pubspec.yaml');
+      if (fs.existsSync(pubspecPath)) {
+        const relativePath = path.relative(normalizedMelosRoot, lookupPath).replace(/\\/g, '/').toLowerCase();
+        if (relativePath.startsWith('apps/')) {
+          return lookupPath;
+        }
+      }
+
+      if (lookupPath === normalizedMelosRoot) {
+        break;
+      }
+
+      const parentPath = path.dirname(lookupPath);
+      if (parentPath === lookupPath) {
+        break;
+      }
+
+      lookupPath = parentPath;
+    }
+
+    return null;
+  }
 
   getProjectName(projectPath: string): string | null {
     try {

@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as vscode from 'vscode';
 
 export class WorkspaceHelper {
@@ -12,5 +13,16 @@ export class WorkspaceHelper {
         }
 
         return currentDir.length === 0 ? null : currentDir;
+    }
+
+    static getActiveFileDirectory(): string | null {
+        const activeEditor = vscode.window.activeTextEditor;
+
+        if (!activeEditor || activeEditor.document.uri.scheme !== 'file') {
+            return null;
+        }
+
+        const activeFilePath = activeEditor.document.uri.fsPath;
+        return activeFilePath.length === 0 ? null : path.dirname(activeFilePath);
     }
 }

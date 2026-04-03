@@ -15,37 +15,31 @@ export class MelosHelper {
      * Solo retorna apps (ignora packages compartidos)
      * Soporta Melos < 7.x (melos.yaml) y >= 7.x (pubspec.yaml con workspace)
      */
-    getMelosPackages(melosRootPath: string): MelosPackage[] {
+    getMelosPackages(melosRootPath: string, appsOnly: boolean = true): MelosPackage[] {
         const packages: MelosPackage[] = [];
         
         try {
             const pubspecPath = path.join(melosRootPath, 'pubspec.yaml');
-            
-            // Verificar versión de Melos
             const melosVersion = this.getMelosVersion(pubspecPath);
-            console.log('[DEBUG MelosHelper] Melos version:', melosVersion);
 
             if (melosVersion !== null && melosVersion >= 7) {
-                // Melos >= 7.x: Leer workspace de pubspec.yaml
-                console.log('[DEBUG MelosHelper] Using Melos >= 7.x config (pubspec.yaml workspace)');
+                // Melos >= 7.x: read workspace from pubspec.yaml
                 if (fs.existsSync(pubspecPath)) {
                     const pubspecContent = fs.readFileSync(pubspecPath, 'utf8');
-                    return this.getPackagesFromPubspecWorkspace(pubspecContent, melosRootPath);
+                    return this.getPackagesFromPubspecWorkspace(pubspecContent, melosRootPath, appsOnly);
                 }
             } else {
-                // Melos < 7.x: Leer packages de melos.yaml
-                console.log('[DEBUG MelosHelper] Using Melos < 7.x config (melos.yaml)');
+                // Melos < 7.x: read packages from melos.yaml
                 const melosYamlPath = path.join(melosRootPath, 'melos.yaml');
                 if (fs.existsSync(melosYamlPath)) {
                     const melosContent = fs.readFileSync(melosYamlPath, 'utf8');
-                    return this.getPackagesFromMelosYaml(melosContent, melosRootPath);
+                    return this.getPackagesFromMelosYaml(melosContent, melosRootPath, appsOnly);
                 }
             }
 
-            console.log('[DEBUG MelosHelper] No Melos config found');
             return packages;
         } catch (error) {
-            console.error('Error al obtener paquetes de Melos:', error);
+            console.error('Error reading Melos packages:', error);
             return packages;
         }
     }
@@ -53,7 +47,7 @@ export class MelosHelper {
     /**
      * Obtiene paquetes desde melos.yaml (Melos < 7.x)
      */
-    private getPackagesFromMelosYaml(melosContent: string, melosRootPath: string): MelosPackage[] {
+    private getPackagesFromMelosYaml(melosContent: string, melosRootPath: string, appsOnly: boolean): MelosPackage[] {
         const packages: MelosPackage[] = [];
         const packagePaths = this.extractPackagePathsFromMelosYaml(melosContent, melosRootPath);
 
@@ -63,52 +57,38 @@ export class MelosHelper {
             packages.push(...foundPackages);
         });
 
-        return this.filterAppsOnly(packages);
+        return appsOnly ? this.filterAppsOnly(packages) : packages.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     /**
      * Obtiene paquetes desde pubspec.yaml workspace (Melos >= 7.x)
-     * En Melos 7.x, las apps pueden no estar en workspace, pero siempre están en apps/
      */
-    private getPackagesFromPubspecWorkspace(pubspecContent: string, melosRootPath: string): MelosPackage[] {
+    private getPackagesFromPubspecWorkspace(pubspecContent: string, melosRootPath: string, appsOnly: boolean): MelosPackage[] {
         const packages: MelosPackage[] = [];
         const workspacePaths = this.extractWorkspacePathsFromPubspec(pubspecContent);
 
-        console.log('[DEBUG MelosHelper] Processing', workspacePaths.length, 'workspace paths');
-
-        // Procesar paths del workspace
         workspacePaths.forEach(packagePath => {
             const fullPath = path.join(melosRootPath, packagePath);
-            console.log('[DEBUG MelosHelper] Checking workspace path:', fullPath);
-            
             if (fs.existsSync(fullPath)) {
                 const pkg = this.createPackageInfo(melosRootPath, fullPath, packagePath);
                 if (pkg) {
-                    console.log('[DEBUG MelosHelper] Created package:', pkg.name, 'at', pkg.relativePath);
                     packages.push(pkg);
                 }
             }
         });
 
-        // IMPORTANTE: También escanear la carpeta apps/ aunque no esté en workspace
-        // Las apps pueden no estar listadas en workspace pero estar en apps/
+        // Also scan apps/ directory in case apps are not listed in the workspace section
         const appsDir = path.join(melosRootPath, 'apps');
         if (fs.existsSync(appsDir)) {
-            console.log('[DEBUG MelosHelper] Scanning apps/ directory...');
             const appsFound = this.findPackagesInPath(melosRootPath, 'apps/*');
-            console.log('[DEBUG MelosHelper] Found', appsFound.length, 'apps in apps/ directory');
-            
-            // Agregar apps que no estén ya en packages
             appsFound.forEach(app => {
                 if (!packages.find(p => p.path === app.path)) {
-                    console.log('[DEBUG MelosHelper] Adding app from apps/:', app.name);
                     packages.push(app);
                 }
             });
         }
 
-        console.log('[DEBUG MelosHelper] Total packages before filtering:', packages.length);
-        return this.filterAppsOnly(packages);
+        return appsOnly ? this.filterAppsOnly(packages) : packages.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     /**
@@ -127,25 +107,20 @@ export class MelosHelper {
             if (match && match[1]) {
                 return parseInt(match[1], 10);
             }
-        } catch (error) {
-            console.log('[DEBUG MelosHelper] Error reading Melos version:', error);
+        } catch {
+            // ignore version detection errors
         }
 
         return null;
     }
 
     /**
-     * Filtra solo los paquetes que están en la carpeta 'apps/'
-     * Las apps SIEMPRE están en apps/, sin importar si están o no en workspace
+     * Filters only packages located in the `apps/` directory.
      */
     private filterAppsOnly(packages: MelosPackage[]): MelosPackage[] {
-        const appsOnly = packages.filter(pkg => {
-            const normalizedPath = pkg.relativePath.replace(/\\/g, '/').toLowerCase();
-            return normalizedPath.startsWith('apps/');
-        });
-
-        console.log(`[DEBUG MelosHelper] Total packages: ${packages.length}, Apps in 'apps/' folder: ${appsOnly.length}`);
-        return appsOnly.sort((a, b) => a.name.localeCompare(b.name));
+        return packages
+            .filter(pkg => pkg.relativePath.replace(/\\/g, '/').toLowerCase().startsWith('apps/'))
+            .sort((a, b) => a.name.localeCompare(b.name));
     }
 
     /**
@@ -153,42 +128,27 @@ export class MelosHelper {
      */
     private extractWorkspacePathsFromPubspec(pubspecContent: string): string[] {
         const paths: string[] = [];
-        
-        console.log('[DEBUG MelosHelper] Parsing workspace from pubspec...');
-        
-        // Buscar todas las líneas que empiecen con "  -" después de "workspace:"
-        // Usar una búsqueda más simple línea por línea
         const lines = pubspecContent.split('\n');
         let inWorkspace = false;
         
         for (const line of lines) {
-            // Detectar inicio de workspace
             if (/^workspace:\s*$/.test(line)) {
                 inWorkspace = true;
-                console.log('[DEBUG MelosHelper] Found workspace: section');
                 continue;
             }
             
-            // Si estamos en workspace y encontramos una línea con -
             if (inWorkspace) {
-                // Si encontramos otra sección (sin indentación), salir
                 if (/^[a-z_]+:/.test(line)) {
-                    console.log('[DEBUG MelosHelper] End of workspace section');
                     break;
                 }
                 
-                // Buscar líneas con "  - path"
                 const pathMatch = line.match(/^\s+-\s+(.+?)\s*$/);
                 if (pathMatch && pathMatch[1]) {
-                    const cleanPath = pathMatch[1].trim();
-                    paths.push(cleanPath);
-                    console.log('[DEBUG MelosHelper] Found workspace path:', cleanPath);
+                    paths.push(pathMatch[1].trim());
                 }
             }
         }
 
-        console.log('[DEBUG MelosHelper] Total workspace paths extracted:', paths.length);
-        console.log('[DEBUG MelosHelper] Paths:', paths);
         return paths;
     }
 

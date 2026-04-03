@@ -25,8 +25,8 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(showMenuCommand);
 
-    // Registrar comandos de la extensión
-    const commandManager = new CommandManager(statusBarManager);
+    // Registrar comandos de la extensión  (outputChannel reutilizado en ShowArchitectureInfoCommand)
+    const commandManager = new CommandManager(statusBarManager, outputChannel);
     commandManager.registerCommands(context);
 
     // Actualizar Status Bar cuando cambie la configuración

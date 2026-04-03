@@ -25,7 +25,6 @@ export class CreateFeatureCommand extends BaseCommand {
 
         // 1. Primero resolver el directorio de trabajo (incluye soporte para Melos)
         const resolveResult = await this.resolveWorkingDirectoryWithInfo('crear la feature');
-        console.log('[DEBUG CreateFeatureCommand] Working directory resolved:', resolveResult);
         if (!resolveResult) {
             return; // El usuario canceló o hubo un error
         }
@@ -36,7 +35,6 @@ export class CreateFeatureCommand extends BaseCommand {
         const modeResult = await this.structureModeManager!.getEffectiveModeWithSource(workingDir);
         const mode = modeResult.mode;
         const modeSource = modeResult.source;
-        console.log('[DEBUG CreateFeatureCommand] Mode determined:', mode, 'Source:', modeSource);
 
         // 3. Luego pedir el nombre de la feature
         const featureName = await this.showInputBox('✨ Ingrese el nombre de la feature (ej: authentication, products)');

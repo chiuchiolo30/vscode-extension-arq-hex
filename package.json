@@ -94,6 +94,14 @@
       {
         "command": "flutter-arq-hex.showStatusBarMenu",
         "title": "Clean Architecture: Show configuration menu"
+      },
+      {
+        "command": "flutter-arq-hex.showArchitectureInfo",
+        "title": "Clean Architecture: Show architecture info"
+      },
+      {
+        "command": "flutter-arq-hex.generateInstructions",
+        "title": "Clean Architecture: Generate AI instructions file"
       }
     ],
     "configuration": {
