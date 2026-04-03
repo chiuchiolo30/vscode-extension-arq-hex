@@ -4,6 +4,34 @@ All notable changes to the "flutter-arq-hex" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.4.0] - 2026-04-03
+
+### Added
+- **🤖 AI / Copilot Chat Integration**: 6 Language Model Tools registered for use with GitHub Copilot and compatible AI agents
+  - `dartarch_inspect_architecture`: Lists features, use cases, and structure mode (single project & Melos monorepos)
+  - `dartarch_detect_stack`: Detects state management, DI, routing, serialization, networking, storage, forms, and testing packages
+  - `dartarch_create_feature`: Creates a blank feature with domain, data, and ui layers
+  - `dartarch_create_feature_crud`: Creates a typed CRUD feature with entity, repository contract, implementation, and 4 use cases
+  - `dartarch_create_usecase`: Adds a use case to an existing feature and updates the repository contract
+  - `dartarch_generate_instructions`: Generates `.github/copilot-instructions.md` with stack-aware architecture guidance
+- **📝 AI Instructions Generator** (`GenerateInstructionsCommand`): New command to generate `.github/copilot-instructions.md` from the Command Palette
+- **🧠 InstructionsBuilder**: Stack-aware instructions generator with guidance for state management, DI, routing, serialization, and Clean Architecture rules
+- **🔍 StackDetector**: Detects technology stack from `pubspec.yaml` across 8 categories (state management, DI, routing, serialization, networking, local storage, forms, testing)
+- **🎬 demo.gif**: New demo recording showing the full AI-assisted workflow in Copilot Chat
+
+### Changed
+- **📝 README.md**: Major rewrite for conversion, clarity, and VS Code Marketplace positioning
+  - New impactful headline and value proposition
+  - Comparison table (without vs. with extension)
+  - AI / Copilot Chat Integration section promoted to top of features
+  - New "Use Cases" section with 6 practical scenarios
+  - Improved structure modes documentation with directory trees
+  - Two separate workflows: Command Palette and Copilot Chat
+  - Updated commands table with all 7 commands
+  - Optimized for scanning and readability
+
+---
+
 ## [1.3.0] - 2026-03-03
 
 ### Changed

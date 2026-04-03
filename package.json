@@ -22,9 +22,9 @@
   "author": {
     "name": "Chiuchiolo Sergio Edgardo"
   },
-  "version": "1.3.2",
+  "version": "1.4.0",
   "engines": {
-    "vscode": "^1.77.0"
+    "vscode": "^1.93.0"
   },
   "categories": [
     "Programming Languages",
@@ -66,7 +66,14 @@
     "architecture"
   ],
   "activationEvents": [
-    "onLanguage:dart"
+    "onLanguage:dart",
+    "onStartupFinished",
+    "onLanguageModelTool:dartarch_detect_stack",
+    "onLanguageModelTool:dartarch_inspect_architecture",
+    "onLanguageModelTool:dartarch_create_feature",
+    "onLanguageModelTool:dartarch_create_feature_crud",
+    "onLanguageModelTool:dartarch_create_usecase",
+    "onLanguageModelTool:dartarch_generate_instructions"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -102,6 +109,176 @@
       {
         "command": "flutter-arq-hex.generateInstructions",
         "title": "Clean Architecture: Generate AI instructions file"
+      }
+    ],
+    "languageModelTools": [
+      {
+        "name": "dartarch_detect_stack",
+        "displayName": "Dart Arch: Detect Technology Stack",
+        "toolReferenceName": "detectStack",
+        "canBeReferencedInPrompt": true,
+        "modelDescription": "Self-sufficient command that reads and returns the full technology stack of a Flutter/Dart project. Works exactly like running 'Detect Stack' from the VS Code command palette — no file reading needed before or after. Just provide projectPath (or omit for the current workspace) and the tool does everything. The result is final and complete — do not read any files to supplement it.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "projectPath": {
+              "type": "string",
+              "description": "Absolute path to the Flutter/Dart project root (must contain pubspec.yaml). Omit to use the first open workspace folder."
+            }
+          }
+        }
+      },
+      {
+        "name": "dartarch_inspect_architecture",
+        "displayName": "Dart Arch: Inspect Architecture",
+        "toolReferenceName": "inspectArchitecture",
+        "canBeReferencedInPrompt": true,
+        "modelDescription": "Self-sufficient command that returns the complete architecture of a Flutter/Dart project or Melos monorepo: project name, path, structure mode, and all existing features with their use cases. Works exactly like running 'Inspect Architecture' from the VS Code command palette — no file exploration needed before or after. The result is final and complete: do NOT open files, browse directories, or explore feature internals after calling this tool. Use the returned 'path' field directly as projectPath for subsequent dartarch_* commands.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "projectPath": {
+              "type": "string",
+              "description": "Absolute path to a Flutter/Dart project root or Melos monorepo root. Omit to use the first open workspace folder."
+            }
+          }
+        }
+      },
+      {
+        "name": "dartarch_create_feature",
+        "displayName": "Dart Arch: Create Feature",
+        "toolReferenceName": "createFeature",
+        "canBeReferencedInPrompt": true,
+        "modelDescription": "Self-sufficient command that creates a complete Clean Architecture feature (domain, data, and UI layers with all boilerplate files). Works exactly like running 'Create Feature' from the VS Code command palette — it handles all file creation internally, no manual file writing needed. Provide projectPath and featureName extracted from the user's message and the tool does 100% of the work. If the user wants CRUD operations with an entity, use dartarch_create_feature_crud instead.",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectPath",
+            "featureName"
+          ],
+          "properties": {
+            "projectPath": {
+              "type": "string",
+              "description": "Absolute path to the Flutter project root (must contain pubspec.yaml)."
+            },
+            "featureName": {
+              "type": "string",
+              "description": "Feature name as a single word in snake_case or camelCase (e.g. 'authentication', 'userProfile'). No spaces or special characters."
+            }
+          }
+        }
+      },
+      {
+        "name": "dartarch_create_feature_crud",
+        "displayName": "Dart Arch: Create Feature with CRUD",
+        "toolReferenceName": "createFeatureCrud",
+        "canBeReferencedInPrompt": true,
+        "modelDescription": "Self-sufficient command that creates a complete Clean Architecture feature with full CRUD: typed entity, repository contract, implementation, four use cases, and datasources. Works exactly like running 'Create Feature with CRUD' from the VS Code command palette — it handles all file creation internally. Extract all parameters directly from the user's message and call this tool once — it does 100% of the work. IMPORTANT for entity fields: the primary key goes in identifierField+identifierType; ALL other fields go in additionalFields. Example: 'Order(id, userId, total, status)' → identifierField='id', identifierType='String', additionalFields=[{name:'userId',type:'String'},{name:'total',type:'double'},{name:'status',type:'String'}]. NEVER leave additionalFields empty if the entity has more than one field.",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectPath",
+            "featureName",
+            "entityName",
+            "identifierField",
+            "identifierType"
+          ],
+          "properties": {
+            "projectPath": {
+              "type": "string",
+              "description": "Absolute path to the Flutter project root (must contain pubspec.yaml)."
+            },
+            "featureName": {
+              "type": "string",
+              "description": "Feature name in snake_case or camelCase (e.g. 'products', 'orders')."
+            },
+            "entityName": {
+              "type": "string",
+              "description": "Main entity class name without the 'Entity' suffix (e.g. 'Product', 'Order'). PascalCase."
+            },
+            "identifierField": {
+              "type": "string",
+              "description": "Name of the primary-key field ONLY (e.g. 'id'). Do not put other fields here."
+            },
+            "identifierType": {
+              "type": "string",
+              "description": "Dart type of the primary-key field (e.g. 'String', 'int')."
+            },
+            "additionalFields": {
+              "type": "array",
+              "description": "ALL entity fields except the identifier. If the user described an entity with N fields and one is the identifier, the other N-1 fields go here. NEVER leave this empty if the entity has more than one field.",
+              "items": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "type"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Field name in camelCase (e.g. 'userName')."
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Dart type (e.g. 'String', 'int', 'bool', 'DateTime')."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "dartarch_create_usecase",
+        "displayName": "Dart Arch: Create Use Case",
+        "toolReferenceName": "createUseCase",
+        "canBeReferencedInPrompt": true,
+        "modelDescription": "Self-sufficient command that adds a use case to an existing feature and automatically updates the repository contract and implementation. Works exactly like running 'Create Use Case' from the VS Code command palette — it handles all file creation and modification internally. Extract projectPath, featureName, and useCaseName from the user's message and call this tool once — it does 100% of the work.",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectPath",
+            "featureName",
+            "useCaseName"
+          ],
+          "properties": {
+            "projectPath": {
+              "type": "string",
+              "description": "Absolute path to the Flutter project root (must contain pubspec.yaml)."
+            },
+            "featureName": {
+              "type": "string",
+              "description": "Name of the existing feature (must match the folder name exactly, e.g. 'authentication')."
+            },
+            "useCaseName": {
+              "type": "string",
+              "description": "Use case name in kebab-case or snake_case (e.g. 'get-user-profile', 'create_order')."
+            }
+          }
+        }
+      },
+      {
+        "name": "dartarch_generate_instructions",
+        "displayName": "Dart Arch: Generate AI Instructions",
+        "toolReferenceName": "generateInstructions",
+        "canBeReferencedInPrompt": true,
+        "modelDescription": "Self-sufficient command that generates the .github/copilot-instructions.md file for a Flutter/Dart project. Works exactly like running 'Generate AI Instructions' from the VS Code command palette — it reads the project internally and writes the complete file without any manual file access needed. Provide projectPath and set overwrite=true to replace an existing file. The tool does 100% of the work.",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "projectPath"
+          ],
+          "properties": {
+            "projectPath": {
+              "type": "string",
+              "description": "Absolute path to the Flutter project root (must contain pubspec.yaml)."
+            },
+            "overwrite": {
+              "type": "boolean",
+              "description": "When true, overwrites the existing .github/copilot-instructions.md without prompting. Defaults to false."
+            }
+          }
+        }
       }
     ],
     "configuration": {
@@ -153,16 +330,16 @@
     "deploy": "vsce publish"
   },
   "devDependencies": {
-    "@types/vscode": "^1.77.0",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
+    "@types/vscode": "^1.110.0",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
+    "@vscode/test-electron": "^2.3.0",
     "eslint": "^8.36.0",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
-    "typescript": "^4.9.5",
-    "@vscode/test-electron": "^2.3.0"
+    "typescript": "^4.9.5"
   }
 }

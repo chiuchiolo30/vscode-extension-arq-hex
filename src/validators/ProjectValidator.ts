@@ -242,4 +242,25 @@ export class ProjectValidator {
       return [];
     }
   }
+
+  /**
+   * Returns the use case names that exist inside a feature's domain/usecases folder.
+   * Works for both Feature-First and Layer-First modes.
+   */
+  getFeatureUseCases(projectPath: string, featureName: string, mode: 'featureFirst' | 'layerFirst' = 'featureFirst'): string[] {
+    try {
+      const usecasesPath = mode === 'featureFirst'
+        ? path.join(projectPath, 'lib', 'features', featureName, 'domain', 'usecases')
+        : path.join(projectPath, 'lib', 'domain', featureName, 'usecases');
+
+      if (!fs.existsSync(usecasesPath)) { return []; }
+
+      return fs.readdirSync(usecasesPath, { withFileTypes: true })
+        .filter(f => f.isFile() && f.name.endsWith('.dart') && !f.name.startsWith('_'))
+        .map(f => f.name.replace(/\.dart$/, ''))
+        .sort();
+    } catch {
+      return [];
+    }
+  }
 }

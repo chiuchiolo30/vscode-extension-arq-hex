@@ -129,7 +129,22 @@ export class StackDetector {
      * package names (they typically don't start with a letter and contain no
      * uppercase letters in their names).
      */
-    private extractAllPackageNames(content: string): Set<string> {
+    /**
+     * Returns all package names declared in pubspec.yaml (all categories),
+     * sorted alphabetically. Returns empty array if file not found.
+     */
+    detectAllPackages(projectPath: string): string[] {
+        const pubspecPath = path.join(projectPath, 'pubspec.yaml');
+        if (!fs.existsSync(pubspecPath)) { return []; }
+        try {
+            const content = fs.readFileSync(pubspecPath, 'utf8');
+            return Array.from(this.extractAllPackageNames(content)).sort();
+        } catch {
+            return [];
+        }
+    }
+
+    extractAllPackageNames(content: string): Set<string> {
         const packages = new Set<string>();
 
         // Match lines where a package name appears as a YAML map key at 2–4

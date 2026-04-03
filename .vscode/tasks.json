@@ -4,8 +4,13 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "npm",
-			"script": "watch",
+			"label": "npm: watch",
+			"type": "shell",
+			"command": "cmd",
+			"args": ["/c", "npx tsc -watch -p ./"],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {
@@ -14,6 +19,20 @@
 			"group": {
 				"kind": "build",
 				"isDefault": true
+			}
+		},
+		{
+			"label": "tsc: build",
+			"type": "shell",
+			"command": "cmd",
+			"args": ["/c", "npx tsc -p ./"],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": "$tsc",
+			"group": "build",
+			"presentation": {
+				"reveal": "silent"
 			}
 		}
 	]

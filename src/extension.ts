@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { CommandManager } from './commands/CommandManager';
 import { StatusBarManager } from './helpers/StatusBarManager';
 import { StructureModeManager } from './helpers/StructureModeManager';
+import { registerAllTools } from './tools/registerTools';
 
 // Instancia global del StatusBarManager para actualizaciones
 let statusBarManager: StatusBarManager | undefined;
@@ -28,6 +29,15 @@ export function activate(context: vscode.ExtensionContext) {
     // Registrar comandos de la extensión  (outputChannel reutilizado en ShowArchitectureInfoCommand)
     const commandManager = new CommandManager(statusBarManager, outputChannel);
     commandManager.registerCommands(context);
+
+    // Registrar LM Tools (requiere VS Code 1.93+)
+    try {
+        registerAllTools(context);
+        outputChannel.appendLine('[LM Tools] Registered: dartarch_detect_stack, dartarch_inspect_architecture, dartarch_create_feature, dartarch_create_feature_crud, dartarch_create_usecase, dartarch_generate_instructions');
+    } catch (err) {
+        outputChannel.appendLine(`[LM Tools] Registration failed: ${err}`);
+        outputChannel.show();
+    }
 
     // Actualizar Status Bar cuando cambie la configuración
     const configListener = vscode.workspace.onDidChangeConfiguration(e => {
